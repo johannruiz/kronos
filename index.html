@@ -28,15 +28,20 @@
             color: white; 
             border: 1px solid #374151;
             border-radius: 0.5rem; 
-            padding: 0.75rem 0.875rem; 
+            padding: 0.5rem 0.75rem; 
             font-size: 1rem; 
-            transition: border-color 0.2s, box-shadow 0.2s; 
+            transition: all 0.2s ease; 
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
             background-position: right 0.6rem center; 
             background-repeat: no-repeat;
             background-size: 1.1em 1.1em; 
             flex-grow: 1;
+        }
+        @media (min-width: 640px) {
+            .time-select {
+                padding: 0.75rem 0.875rem;
+            }
         }
         .time-select:focus {
             outline: none; 
@@ -91,12 +96,14 @@
         .timer-display-text {
             font-variant-numeric: tabular-nums; 
             font-weight: bold;
-            font-size: clamp(1.2rem, 22vw, 7rem); 
-            line-height: 1; 
+            font-size: clamp(2rem, 15vw, 7rem); 
+            line-height: 1.1; 
             text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            transition: font-size 0.2s ease;
         }
         .timer-cog-icon {
-            font-size: clamp(0.9rem, 8vw, 2.25rem); 
+            font-size: clamp(1rem, 5vw, 2.25rem); 
+            transition: font-size 0.2s ease;
         }
         .modal {
             display: none; position: fixed; z-index: 1000; left: 0; top: 0;
@@ -163,9 +170,17 @@
         }
         /* Clase para la barra de porcentaje, la altura se maneja en JS para asegurar precedencia */
         #timeProgressBarContainer.percentage-style {
-            /* height: 1.5rem; /* Se maneja en JS */
             background-color: #374151; 
             position: relative; 
+            transition: height 0.2s ease;
+        }
+        @media (max-width: 640px) {
+            #timeProgressBarContainer.percentage-style {
+                height: 1.25rem !important;
+            }
+            #progressBarPercentageText {
+                font-size: 0.75rem;
+            }
         }
         #progressBarPercentageText {
             position: absolute;
@@ -184,30 +199,30 @@
 </head>
 <body class="bg-transparent text-white min-h-screen flex items-center justify-center transition-all duration-300">
 
-    <div id="setupView" class="draggable p-6 md:p-8 bg-gray-900 rounded-xl shadow-2xl w-full max-w-md space-y-6">
+    <div id="setupView" class="draggable p-4 sm:p-6 md:p-8 bg-gray-900 rounded-xl shadow-2xl w-full max-w-md space-y-4 sm:space-y-6">
         <div class="flex justify-between items-center">
-            <h1 class="text-2xl font-semibold text-gray-100">Configurar Alarma</h1>
+            <h1 class="text-xl sm:text-2xl font-semibold text-gray-100">Configurar Alarma</h1>
             <button id="closeAppBtn" title="Cerrar Aplicación" class="no-drag text-gray-500 hover:text-gray-300 transition-colors">
                 <i class="fas fa-times fa-lg"></i>
             </button>
         </div>
-        <div class="space-y-5"> 
-            <div class="p-5 bg-gray-800 rounded-lg shadow">
+        <div class="space-y-3 sm:space-y-5"> 
+            <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
                 <label for="alarmHour" class="block text-sm font-medium text-gray-300 mb-2 no-drag">Hora de Alarma (12H)</label>
                 <div class="flex space-x-2 items-center">
-                    <select id="alarmHour" class="time-select no-drag"></select>
-                    <span class="text-gray-400 text-lg font-semibold no-drag">:</span>
-                    <select id="alarmMinute" class="time-select no-drag"></select>
-                    <select id="alarmAmPm" class="time-select no-drag min-w-[4.5rem]"></select>
+                    <select id="alarmHour" class="time-select no-drag text-sm sm:text-base"></select>
+                    <span class="text-gray-400 text-base sm:text-lg font-semibold no-drag">:</span>
+                    <select id="alarmMinute" class="time-select no-drag text-sm sm:text-base"></select>
+                    <select id="alarmAmPm" class="time-select no-drag min-w-[4rem] sm:min-w-[4.5rem] text-sm sm:text-base"></select>
                 </div>
             </div>
-            <div class="p-5 bg-gray-800 rounded-lg shadow">
+            <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
                 <label for="transparencySlider" class="block text-sm font-medium text-gray-300 mb-2 no-drag">
                     Opacidad (Solo Temporizador): <span id="transparencyValue" class="font-semibold">100</span>%
                 </label>
                 <input type="range" id="transparencySlider" min="20" max="100" value="100" class="w-full h-2.5 rounded-lg appearance-none cursor-pointer no-drag">
             </div>
-            <div class="p-5 bg-gray-800 rounded-lg shadow">
+            <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
                 <label for="progressBarSwitch" class="flex items-center justify-between mb-3 no-drag cursor-pointer">
                     <span class="text-sm font-medium text-gray-300">
                         Mostrar Barra de Progreso
@@ -228,6 +243,17 @@
                     </div>
                 </div>
             </div>
+            <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
+                <label for="soundSwitch" class="flex items-center justify-between mb-3 no-drag cursor-pointer">
+                    <span class="text-sm font-medium text-gray-300">
+                        Activar Sonido de Alarma
+                    </span>
+                    <div class="relative"> 
+                        <input type="checkbox" id="soundSwitch" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                    </div>
+                </label>
+            </div>
         </div>
         <button id="startTimerBtn" class="no-drag w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors text-base shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
             <i class="fas fa-play mr-1.5"></i> Iniciar Temporizador
@@ -235,15 +261,15 @@
     </div>
 
     <div id="timerView" class="hidden w-screen h-screen bg-black flex flex-col items-center justify-center text-center draggable rounded-2xl">
-        <div id="timerControls" class="flex flex-col items-center w-full px-4">
-            <div id="timerDisplay" class="timer-display-text mb-3">00:00:00</div>
-            <div id="timeProgressBarContainer" class="w-3/4 max-w-xs sm:max-w-sm h-2.5 flex items-center rounded-full my-2 overflow-hidden" style="gap: 2px;">
+        <div id="timerControls" class="flex flex-col items-center w-full px-2 sm:px-4 max-w-4xl mx-auto">
+            <div id="timerDisplay" class="timer-display-text mb-2 sm:mb-3 select-none">00:00:00</div>
+            <div id="timeProgressBarContainer" class="w-4/5 sm:w-3/4 max-w-xs sm:max-w-sm h-2 sm:h-2.5 flex items-center rounded-full my-2 overflow-hidden transition-all duration-200" style="gap: 2px;">
             </div>
-            <button id="dismissAlarmBtn" class="hidden no-drag mt-3">
+            <button id="dismissAlarmBtn" class="hidden no-drag mt-2 sm:mt-3 text-sm sm:text-base px-4 py-2 rounded-lg transition-all duration-200">
                 <i class="fas fa-bell-slash mr-1.5"></i> Descartar Alarma
             </button>
         </div>
-        <button id="stopTimerBtn" title="Volver a Configuración" class="no-drag absolute bottom-4 right-4 p-2 text-gray-500 hover:text-white transition-colors">
+        <button id="stopTimerBtn" title="Volver a Configuración" class="no-drag absolute bottom-2 sm:bottom-4 right-2 sm:right-4 p-2 text-gray-500 hover:text-white transition-all duration-200">
             <i class="fas fa-cog timer-cog-icon"></i> 
         </button>
     </div>
@@ -276,7 +302,7 @@
         const progressBarTypeContainer = document.getElementById('progressBarTypeContainer'); 
         const progressTypeSegmentsBtn = document.getElementById('progressTypeSegments'); 
         const progressTypePercentageBtn = document.getElementById('progressTypePercentage'); 
-
+        const soundSwitch = document.getElementById('soundSwitch');
 
         let timerInterval;
         let targetTime;
@@ -287,9 +313,11 @@
         let timerOpacityValue = 100;
         let showProgressBarSetting = true; 
         let progressBarTypeSetting = 'segments'; 
+        let soundEnabled = true;
 
         async function initAudio() { 
             try {
+                if (!soundEnabled) return;
                 if (Tone.context.state !== 'running') await Tone.start();
                 if (!synth) {
                     synth = new Tone.Synth({
@@ -374,6 +402,11 @@
             saveCurrentSettings();
         });
 
+        soundSwitch.addEventListener('change', () => {
+            soundEnabled = soundSwitch.checked;
+            saveCurrentSettings();
+        });
+
         alarmHourSelect.addEventListener('change', saveCurrentSettings);
         alarmMinuteSelect.addEventListener('change', saveCurrentSettings);
         alarmAmPmSelect.addEventListener('change', saveCurrentSettings);
@@ -386,7 +419,8 @@
                     alarmAmPm: alarmAmPmSelect.value,
                     opacity: timerOpacityValue, 
                     showProgressBar: showProgressBarSetting, 
-                    progressBarType: progressBarTypeSetting 
+                    progressBarType: progressBarTypeSetting,
+                    soundEnabled: soundEnabled
                 };
                 window.electronAPI.send('save-settings', settings);
             }
@@ -431,6 +465,14 @@
                         progressTypeSegmentsBtn.classList.add('active');
                         progressTypePercentageBtn.classList.remove('active');
                     }
+
+                    if (settings.hasOwnProperty('soundEnabled')) {
+                        soundEnabled = settings.soundEnabled;
+                        soundSwitch.checked = settings.soundEnabled;
+                    } else {
+                        soundEnabled = true;
+                        soundSwitch.checked = true;
+                    }
                 }
             });
         }
@@ -441,7 +483,9 @@
         });
 
         startTimerBtn.addEventListener('click', async () => {
-            await initAudio(); 
+            if (soundEnabled) {
+                await initAudio(); 
+            }
             if (isAlarmSounding) stopAlarmSound();
             saveCurrentSettings(); 
 
@@ -601,13 +645,15 @@
                 });
             }
 
-            if (Tone.context.state !== 'running' || !synth) {
-                initAudio().then(() => { 
-                    if (Tone.context.state === 'running' && synth) startAlarmSoundLoop();
-                    else if (window.electronAPI) showCustomAlert("Error de audio al sonar la alarma.");
-                });
-            } else {
-                startAlarmSoundLoop();
+            if (soundEnabled && (Tone.context.state === 'running' || Tone.context.state === 'suspended')) {
+                if (!synth) {
+                    initAudio().then(() => { 
+                        if (Tone.context.state === 'running' && synth) startAlarmSoundLoop();
+                        else if (window.electronAPI) showCustomAlert("Error de audio al sonar la alarma.");
+                    });
+                } else {
+                    startAlarmSoundLoop();
+                }
             }
         }
         
