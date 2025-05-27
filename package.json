@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "description": "Una aplicación de alarma minimalista siempre visible",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "start": "electron .",
     "package": "electron-forge package",
