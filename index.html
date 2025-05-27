@@ -110,6 +110,7 @@
             width: 100%; height: 100%; overflow: auto; 
             background-color: rgba(0,0,0,0.7);
             align-items: center; justify-content: center;
+            -webkit-app-region: no-drag; /* Asegura que el modal no sea arrastrable */
         }
         .modal-content {
             background-color: #1f2937; color: white; 
@@ -119,6 +120,8 @@
         }
         .modal-button {
             background-color: #4f46e5; color: white; 
+            display: inline-block; /* Asegurar comportamiento inline-block */
+            position: relative;    /* Para establecer un contexto de apilamiento */
             padding: 12px 24px; border: none;
             border-radius: 0.5rem; cursor: pointer; margin-top: 20px;
             transition: background-color 0.2s ease-in-out; 
@@ -253,18 +256,35 @@
             border-radius: 10px;
             border: 2px solid #222b38; /* Crea un efecto de padding alrededor del thumb */
         }
+        /* Styles for the new scrollable settings area */
+        #scrollableSettingsArea {
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: #4A5568 #2D3748; /* Firefox: color del thumb y del track */
+        }
+        #scrollableSettingsArea::-webkit-scrollbar {
+            width: 8px;
+        }
+        #scrollableSettingsArea::-webkit-scrollbar-track {
+            background: #1f2937; /* Slightly different from presetsListContainer for distinction or match body */
+            border-radius: 10px;
+        }
+        #scrollableSettingsArea::-webkit-scrollbar-thumb {
+            background-color: #4A5568;
+            border-radius: 10px;
+            border: 2px solid #1f2937; 
+        }
     </style>
 </head>
 <body class="bg-transparent text-white min-h-screen flex items-center justify-center transition-all duration-300">
 
-    <div id="setupView" class="draggable p-4 sm:p-6 md:p-8 bg-gray-900 rounded-xl shadow-2xl w-full max-w-md space-y-4 sm:space-y-6">
-        <div class="flex justify-between items-center">
+    <div id="setupView" class="draggable p-4 sm:p-6 md:p-8 bg-gray-900 rounded-xl w-full max-w-md space-y-4 sm:space-y-6 flex flex-col" style="height: 100%; max-height: 780px;">
+        <div class="flex justify-between items-center flex-shrink-0">
             <h1 class="text-xl sm:text-2xl font-semibold text-gray-100">Configurar Alarma</h1>
             <button id="closeAppBtn" title="Cerrar Aplicación" aria-label="Cerrar Aplicación" class="no-drag text-gray-500 hover:text-gray-300 transition-colors">
                 <i class="fas fa-times fa-lg" aria-hidden="true"></i>
             </button>
         </div>
-        <div class="space-y-3 sm:space-y-5"> 
+        <div id="scrollableSettingsArea" class="flex-grow overflow-y-auto space-y-3 sm:space-y-5 pr-1.5">
             <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
                 <label for="alarmHour" class="block text-sm font-medium text-gray-300 mb-2 no-drag">Hora de Alarma (12H)</label>
                 <div class="flex space-x-2 items-center">
@@ -323,7 +343,7 @@
                 </label>
             </div>
         </div>
-        <button id="startTimerBtn" class="no-drag w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors text-base shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
+        <button id="startTimerBtn" class="flex-shrink-0 no-drag w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors text-base shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
             <i class="fas fa-play mr-1.5" aria-hidden="true"></i> Iniciar Temporizador
         </button>
     </div>
