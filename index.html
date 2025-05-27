@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alarma Minimalista</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            user-select: none;
+            overflow: hidden; 
+        }
+        .draggable {
+            -webkit-app-region: drag;
+            cursor: grab;
+        }
+        .no-drag {
+            -webkit-app-region: no-drag;
+            cursor: default;
+        }
+        .time-select {
+            background-color: #111827; 
+            color: white; 
+            border: 1px solid #374151;
+            border-radius: 0.5rem; 
+            padding: 0.75rem 0.875rem; 
+            font-size: 1rem; 
+            transition: border-color 0.2s, box-shadow 0.2s; 
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 0.6rem center; 
+            background-repeat: no-repeat;
+            background-size: 1.1em 1.1em; 
+            flex-grow: 1;
+        }
+        .time-select:focus {
+            outline: none; 
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+        }
+        input[type="range"] {
+            background-color: transparent;
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 0.75rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            background: #374151;
+            height: 0.5rem;
+            border-radius: 0.25rem;
+        }
+        input[type="range"]::-moz-range-track {
+            background: #374151;
+            height: 0.5rem;
+            border-radius: 0.25rem;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            margin-top: -0.25rem;
+            background-color: #4f46e5;
+            height: 1rem;
+            width: 1rem;
+            border-radius: 50%;
+            border: 2px solid #111827;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
+        }
+        input[type="range"]::-moz-range-thumb {
+            background-color: #4f46e5;
+            height: 1rem;
+            width: 1rem;
+            border-radius: 50%;
+            border: 2px solid #111827;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
+        }
+        input[type="range"]:focus { outline: none; }
+        input[type="range"]:focus::-webkit-slider-thumb {
+             box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.4);
+        }
+        input[type="range"]:focus::-moz-range-thumb {
+             box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.4);
+        }
+        .timer-display-text {
+            font-variant-numeric: tabular-nums; 
+            font-weight: bold;
+            font-size: clamp(1.2rem, 22vw, 7rem); 
+            line-height: 1; 
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+        .timer-cog-icon {
+            font-size: clamp(0.9rem, 8vw, 2.25rem); 
+        }
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%; overflow: auto; 
+            background-color: rgba(0,0,0,0.7);
+            align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background-color: #1f2937; color: white; 
+            padding: 25px; border: 1px solid #4b5563; 
+            width: 90%; max-width: 400px; border-radius: 0.75rem; 
+            text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .modal-button {
+            background-color: #4f46e5; color: white; 
+            padding: 12px 24px; border: none;
+            border-radius: 0.5rem; cursor: pointer; margin-top: 20px;
+            transition: background-color 0.2s ease-in-out; 
+            font-weight: 500; font-size: 0.95rem;
+        }
+        .modal-button:hover { background-color: #4338ca; }
+        #dismissAlarmBtn {
+            background-color: #ef4444; color: white; font-weight: bold;
+            padding: 0.75rem 1.5rem; border-radius: 0.5rem; 
+            transition: background-color 0.2s ease-in-out;
+            font-size: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        #dismissAlarmBtn:hover { background-color: #dc2626; }
+
+        .sr-only {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+        }
+        .progress-type-selector { 
+            display: flex; 
+            width: 100%; 
+        }
+        .progress-type-selector button {
+            flex-grow: 1; 
+            text-align: center; 
+            padding: 0.6rem 0.5rem; 
+            border: 1px solid #374151; 
+            background-color: #1f2937; 
+            color: #d1d5db; 
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .progress-type-selector button:first-child {
+            border-top-left-radius: 0.375rem;
+            border-bottom-left-radius: 0.375rem;
+        }
+        .progress-type-selector button:last-child {
+            border-top-right-radius: 0.375rem;
+            border-bottom-right-radius: 0.375rem;
+            border-left-width: 0px; 
+        }
+        .progress-type-selector button.active {
+            background-color: #4f46e5; 
+            border-color: #4f46e5;
+            color: white;
+            z-index: 10;
+        }
+        .progress-type-selector button:not(.active):hover {
+            background-color: #374151; 
+        }
+        /* Clase para la barra de porcentaje, la altura se maneja en JS para asegurar precedencia */
+        #timeProgressBarContainer.percentage-style {
+            /* height: 1.5rem; /* Se maneja en JS */
+            background-color: #374151; 
+            position: relative; 
+        }
+        #progressBarPercentageText {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.875rem; 
+            line-height: 1.25rem; 
+            font-weight: 600; 
+            color: white; 
+            text-shadow: 0 0 3px rgba(0,0,0,0.8); 
+            z-index: 5; 
+        }
+
+    </style>
+</head>
+<body class="bg-transparent text-white min-h-screen flex items-center justify-center transition-all duration-300">
+
+    <div id="setupView" class="draggable p-6 md:p-8 bg-gray-900 rounded-xl shadow-2xl w-full max-w-md space-y-6">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-semibold text-gray-100">Configurar Alarma</h1>
+            <button id="closeAppBtn" title="Cerrar Aplicación" class="no-drag text-gray-500 hover:text-gray-300 transition-colors">
+                <i class="fas fa-times fa-lg"></i>
+            </button>
+        </div>
+        <div class="space-y-5"> 
+            <div class="p-5 bg-gray-800 rounded-lg shadow">
+                <label for="alarmHour" class="block text-sm font-medium text-gray-300 mb-2 no-drag">Hora de Alarma (12H)</label>
+                <div class="flex space-x-2 items-center">
+                    <select id="alarmHour" class="time-select no-drag"></select>
+                    <span class="text-gray-400 text-lg font-semibold no-drag">:</span>
+                    <select id="alarmMinute" class="time-select no-drag"></select>
+                    <select id="alarmAmPm" class="time-select no-drag min-w-[4.5rem]"></select>
+                </div>
+            </div>
+            <div class="p-5 bg-gray-800 rounded-lg shadow">
+                <label for="transparencySlider" class="block text-sm font-medium text-gray-300 mb-2 no-drag">
+                    Opacidad (Solo Temporizador): <span id="transparencyValue" class="font-semibold">100</span>%
+                </label>
+                <input type="range" id="transparencySlider" min="20" max="100" value="100" class="w-full h-2.5 rounded-lg appearance-none cursor-pointer no-drag">
+            </div>
+            <div class="p-5 bg-gray-800 rounded-lg shadow">
+                <label for="progressBarSwitch" class="flex items-center justify-between mb-3 no-drag cursor-pointer">
+                    <span class="text-sm font-medium text-gray-300">
+                        Mostrar Barra de Progreso
+                    </span>
+                    <div class="relative"> 
+                        <input type="checkbox" id="progressBarSwitch" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                    </div>
+                </label>
+                <div id="progressBarTypeContainer" class="mt-2 no-drag"> 
+                    <div class="progress-type-selector no-drag" role="group"> 
+                        <button type="button" id="progressTypeSegments" data-type="segments" class="no-drag active">
+                            Segmentos
+                        </button>
+                        <button type="button" id="progressTypePercentage" data-type="percentage" class="no-drag">
+                            Porcentaje
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button id="startTimerBtn" class="no-drag w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors text-base shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
+            <i class="fas fa-play mr-1.5"></i> Iniciar Temporizador
+        </button>
+    </div>
+
+    <div id="timerView" class="hidden w-screen h-screen bg-black flex flex-col items-center justify-center text-center draggable rounded-2xl">
+        <div id="timerControls" class="flex flex-col items-center w-full px-4">
+            <div id="timerDisplay" class="timer-display-text mb-3">00:00:00</div>
+            <div id="timeProgressBarContainer" class="w-3/4 max-w-xs sm:max-w-sm h-2.5 flex items-center rounded-full my-2 overflow-hidden" style="gap: 2px;">
+            </div>
+            <button id="dismissAlarmBtn" class="hidden no-drag mt-3">
+                <i class="fas fa-bell-slash mr-1.5"></i> Descartar Alarma
+            </button>
+        </div>
+        <button id="stopTimerBtn" title="Volver a Configuración" class="no-drag absolute bottom-4 right-4 p-2 text-gray-500 hover:text-white transition-colors">
+            <i class="fas fa-cog timer-cog-icon"></i> 
+        </button>
+    </div>
+
+    <div id="customAlertModal" class="modal">
+        <div class="modal-content">
+            <p id="modalMessageText" class="text-base mb-3"></p>
+            <button id="modalOkButton" class="modal-button">Entendido</button>
+        </div>
+    </div>
+
+    <script>
+        const setupView = document.getElementById('setupView');
+        const timerView = document.getElementById('timerView');
+        const closeAppBtn = document.getElementById('closeAppBtn');
+        const alarmHourSelect = document.getElementById('alarmHour');
+        const alarmMinuteSelect = document.getElementById('alarmMinute');
+        const alarmAmPmSelect = document.getElementById('alarmAmPm');
+        const transparencySlider = document.getElementById('transparencySlider');
+        const transparencyValueSpan = document.getElementById('transparencyValue');
+        const startTimerBtn = document.getElementById('startTimerBtn');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const stopTimerBtn = document.getElementById('stopTimerBtn');
+        const dismissAlarmBtn = document.getElementById('dismissAlarmBtn');
+        const customAlertModal = document.getElementById('customAlertModal');
+        const modalMessageText = document.getElementById('modalMessageText');
+        const modalOkButton = document.getElementById('modalOkButton');
+        const timeProgressBarContainer = document.getElementById('timeProgressBarContainer');
+        const progressBarSwitch = document.getElementById('progressBarSwitch');
+        const progressBarTypeContainer = document.getElementById('progressBarTypeContainer'); 
+        const progressTypeSegmentsBtn = document.getElementById('progressTypeSegments'); 
+        const progressTypePercentageBtn = document.getElementById('progressTypePercentage'); 
+
+
+        let timerInterval;
+        let targetTime;
+        let initialTotalMillisForPercentage = 0; 
+        let synth;
+        let alarmLoop;
+        let isAlarmSounding = false;
+        let timerOpacityValue = 100;
+        let showProgressBarSetting = true; 
+        let progressBarTypeSetting = 'segments'; 
+
+        async function initAudio() { 
+            try {
+                if (Tone.context.state !== 'running') await Tone.start();
+                if (!synth) {
+                    synth = new Tone.Synth({
+                        oscillator: { type: "triangle" },
+                        envelope: { attack: 0.02, decay: 0.3, sustain: 0.2, release: 0.8 }
+                    }).toDestination();
+                }
+            } catch (error) {
+                console.error("Error initializing Tone.js:", error);
+                if (window.electronAPI) showCustomAlert("No se pudo inicializar el audio para la alarma.");
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            populateTimeSelects();
+            initAudio();
+            timeProgressBarContainer.classList.add('hidden'); 
+            updateProgressBarTypeControlsVisibility(); 
+        });
+
+        function showCustomAlert(message) { 
+            modalMessageText.textContent = message;
+            customAlertModal.style.display = 'flex';
+        }
+        modalOkButton.addEventListener('click', () => { customAlertModal.style.display = 'none'; });
+        window.addEventListener('click', (event) => {
+            if (event.target == customAlertModal) customAlertModal.style.display = 'none';
+        });
+
+        function populateTimeSelects() { 
+            alarmHourSelect.innerHTML = ''; 
+            alarmMinuteSelect.innerHTML = ''; 
+            alarmAmPmSelect.innerHTML = '';
+            for (let i = 1; i <= 12; i++) {
+                const option = document.createElement('option');
+                option.value = i.toString().padStart(2, '0');
+                option.textContent = i.toString().padStart(2, '0');
+                alarmHourSelect.appendChild(option);
+            }
+            for (let i = 0; i < 60; i++) {
+                const option = document.createElement('option');
+                option.value = i.toString().padStart(2, '0');
+                option.textContent = i.toString().padStart(2, '0');
+                alarmMinuteSelect.appendChild(option);
+            }
+            const amOption = document.createElement('option'); amOption.value = "AM"; amOption.textContent = "AM";
+            alarmAmPmSelect.appendChild(amOption);
+            const pmOption = document.createElement('option'); pmOption.value = "PM"; pmOption.textContent = "PM";
+            alarmAmPmSelect.appendChild(pmOption);
+        }
+        
+        function updateProgressBarTypeControlsVisibility() {
+            if (showProgressBarSetting) {
+                progressBarTypeContainer.classList.remove('hidden');
+            } else {
+                progressBarTypeContainer.classList.add('hidden');
+            }
+        }
+
+        transparencySlider.addEventListener('input', (e) => {
+            timerOpacityValue = parseInt(e.target.value);
+            transparencyValueSpan.textContent = timerOpacityValue;
+            saveCurrentSettings();
+        });
+
+        progressBarSwitch.addEventListener('change', () => { 
+            showProgressBarSetting = progressBarSwitch.checked;
+            updateProgressBarTypeControlsVisibility(); 
+            saveCurrentSettings();
+        });
+
+        progressTypeSegmentsBtn.addEventListener('click', () => {
+            progressBarTypeSetting = 'segments';
+            progressTypeSegmentsBtn.classList.add('active');
+            progressTypePercentageBtn.classList.remove('active');
+            saveCurrentSettings();
+        });
+        progressTypePercentageBtn.addEventListener('click', () => {
+            progressBarTypeSetting = 'percentage';
+            progressTypePercentageBtn.classList.add('active');
+            progressTypeSegmentsBtn.classList.remove('active');
+            saveCurrentSettings();
+        });
+
+        alarmHourSelect.addEventListener('change', saveCurrentSettings);
+        alarmMinuteSelect.addEventListener('change', saveCurrentSettings);
+        alarmAmPmSelect.addEventListener('change', saveCurrentSettings);
+
+        function saveCurrentSettings() {
+            if (window.electronAPI) {
+                const settings = {
+                    alarmHour: alarmHourSelect.value,
+                    alarmMinute: alarmMinuteSelect.value,
+                    alarmAmPm: alarmAmPmSelect.value,
+                    opacity: timerOpacityValue, 
+                    showProgressBar: showProgressBarSetting, 
+                    progressBarType: progressBarTypeSetting 
+                };
+                window.electronAPI.send('save-settings', settings);
+            }
+        }
+        
+        if (window.electronAPI && typeof window.electronAPI.receive === 'function') {
+            window.electronAPI.receive('load-settings', (settings) => {
+                console.log("Ajustes recibidos en renderer:", settings);
+                if (settings) {
+                    if (alarmHourSelect.options.length > 0) alarmHourSelect.value = settings.alarmHour || '07';
+                    else setTimeout(() => alarmHourSelect.value = settings.alarmHour || '07', 50);
+                    if (alarmMinuteSelect.options.length > 0) alarmMinuteSelect.value = settings.alarmMinute || '00';
+                    else setTimeout(() => alarmMinuteSelect.value = settings.alarmMinute || '00', 50);
+                    if (alarmAmPmSelect.options.length > 0) alarmAmPmSelect.value = settings.alarmAmPm || 'AM';
+                    else setTimeout(() => alarmAmPmSelect.value = settings.alarmAmPm || 'AM', 50);
+                    
+                    transparencySlider.value = settings.opacity || 100;
+                    transparencyValueSpan.textContent = settings.opacity || 100;
+                    timerOpacityValue = settings.opacity || 100;
+
+                    if (settings.hasOwnProperty('showProgressBar')) {
+                        showProgressBarSetting = settings.showProgressBar;
+                        progressBarSwitch.checked = settings.showProgressBar;
+                    } else { 
+                        showProgressBarSetting = true; 
+                        progressBarSwitch.checked = true;
+                    }
+                    updateProgressBarTypeControlsVisibility(); 
+
+                    if (settings.hasOwnProperty('progressBarType')) {
+                        progressBarTypeSetting = settings.progressBarType;
+                        if (progressBarTypeSetting === 'percentage') {
+                            progressTypePercentageBtn.classList.add('active');
+                            progressTypeSegmentsBtn.classList.remove('active');
+                        } else { 
+                            progressBarTypeSetting = 'segments'; 
+                            progressTypeSegmentsBtn.classList.add('active');
+                            progressTypePercentageBtn.classList.remove('active');
+                        }
+                    } else { 
+                        progressBarTypeSetting = 'segments';
+                        progressTypeSegmentsBtn.classList.add('active');
+                        progressTypePercentageBtn.classList.remove('active');
+                    }
+                }
+            });
+        }
+
+        closeAppBtn.addEventListener('click', () => { 
+             if (window.electronAPI) window.electronAPI.send('quit-app');
+            else showCustomAlert("Cerrar app (simulado).");
+        });
+
+        startTimerBtn.addEventListener('click', async () => {
+            await initAudio(); 
+            if (isAlarmSounding) stopAlarmSound();
+            saveCurrentSettings(); 
+
+            const hour = parseInt(alarmHourSelect.value);
+            const minute = parseInt(alarmMinuteSelect.value);
+            const ampm = alarmAmPmSelect.value;
+            let targetHour = hour;
+            if (ampm === 'PM' && hour !== 12) targetHour += 12;
+            if (ampm === 'AM' && hour === 12) targetHour = 0;
+
+            targetTime = new Date(); 
+            targetTime.setHours(targetHour, minute, 0, 0);
+            if (targetTime <= new Date()) {
+                targetTime.setDate(targetTime.getDate() + 1);
+            }
+            
+            initialTotalMillisForPercentage = targetTime - new Date(); 
+
+            setupView.classList.add('hidden');
+            timerView.classList.remove('hidden');
+            dismissAlarmBtn.classList.add('hidden');
+            document.body.classList.remove('items-center', 'justify-center'); 
+            document.body.classList.add('bg-transparent');
+            timerView.style.opacity = timerOpacityValue / 100;
+            
+            if (showProgressBarSetting) {
+                timeProgressBarContainer.classList.remove('hidden');
+                const initialDiff = targetTime - new Date(); 
+                updateProgressBar(initialDiff > 0 ? initialDiff : 0);
+            } else {
+                timeProgressBarContainer.classList.add('hidden');
+                timeProgressBarContainer.innerHTML = ''; 
+            }
+
+            if (window.electronAPI) {
+                window.electronAPI.send('show-timer-window');
+            }
+
+            updateTimerDisplay(); 
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimerDisplay, 1000);
+        });
+        
+        stopTimerBtn.addEventListener('click', () => {
+            clearInterval(timerInterval); 
+            stopAlarmSound(); 
+            timerView.classList.add('hidden');
+            setupView.classList.remove('hidden');
+            document.body.classList.add('items-center', 'justify-center');
+            timerView.style.opacity = 1; 
+            if (window.electronAPI) window.electronAPI.send('show-setup-window');
+            
+            timeProgressBarContainer.innerHTML = ''; 
+            timeProgressBarContainer.classList.add('hidden'); 
+        });
+
+        function updateProgressBar(remainingMillis) {
+            if (!showProgressBarSetting) {
+                timeProgressBarContainer.innerHTML = '';
+                timeProgressBarContainer.classList.add('hidden');
+                timeProgressBarContainer.classList.remove('percentage-style'); 
+                timeProgressBarContainer.style.height = '0.625rem'; // Reset height for segments
+                timeProgressBarContainer.style.gap = '2px'; 
+                return;
+            }
+
+            timeProgressBarContainer.innerHTML = ''; 
+            if (remainingMillis <= 0) {
+                timeProgressBarContainer.classList.add('hidden');
+                return;
+            }
+            timeProgressBarContainer.classList.remove('hidden');
+
+            if (progressBarTypeSetting === 'segments') {
+                timeProgressBarContainer.classList.remove('percentage-style');
+                timeProgressBarContainer.style.gap = '2px'; 
+                timeProgressBarContainer.style.height = '0.625rem'; // h-2.5 de Tailwind
+
+                const totalRemainingSeconds = Math.floor(remainingMillis / 1000);
+                const effectiveTotalSeconds = totalRemainingSeconds > 0 ? totalRemainingSeconds : (remainingMillis > 0 ? 1 : 0);
+                if (effectiveTotalSeconds <= 0) { timeProgressBarContainer.classList.add('hidden'); return; }
+
+                let numberOfSegments = Math.ceil(effectiveTotalSeconds / 3600);
+                if (numberOfSegments === 0 && effectiveTotalSeconds > 0) numberOfSegments = 1; 
+
+                for (let i = 0; i < numberOfSegments; i++) {
+                    const segmentWrapper = document.createElement('div');
+                    segmentWrapper.className = `flex-1 bg-gray-700 relative h-full`; 
+                    const filler = document.createElement('div');
+                    filler.className = 'bg-indigo-400 h-full absolute top-0 left-0';
+                    const C_SECONDS_IN_HOUR = 3600;
+                    const secondsInPreviousFullBars = i * C_SECONDS_IN_HOUR;
+                    let percentage = (effectiveTotalSeconds > secondsInPreviousFullBars + C_SECONDS_IN_HOUR) ? 100 : 
+                                     (Math.max(0, effectiveTotalSeconds - secondsInPreviousFullBars) / C_SECONDS_IN_HOUR) * 100;
+                    filler.style.width = `${Math.min(100, Math.max(0, percentage))}%`;
+                    segmentWrapper.appendChild(filler);
+                    timeProgressBarContainer.appendChild(segmentWrapper);
+                }
+            } else if (progressBarTypeSetting === 'percentage') {
+                timeProgressBarContainer.classList.add('percentage-style'); 
+                timeProgressBarContainer.style.gap = '0px'; 
+                timeProgressBarContainer.style.height = '1.5rem'; // Explicitly set height for percentage
+
+                const filler = document.createElement('div');
+                filler.className = 'bg-indigo-500 h-full'; 
+                
+                const percentageRemaining = initialTotalMillisForPercentage > 0 ? (remainingMillis / initialTotalMillisForPercentage) * 100 : 0;
+                filler.style.width = `${Math.min(100, Math.max(0, percentageRemaining))}%`;
+                
+                const percentageText = document.createElement('span');
+                percentageText.id = 'progressBarPercentageText';
+                percentageText.textContent = `${Math.round(percentageRemaining)}%`;
+
+                timeProgressBarContainer.appendChild(filler);
+                timeProgressBarContainer.appendChild(percentageText); 
+            }
+        }
+
+        function updateTimerDisplay() { 
+            const now = new Date(); 
+            let diff = targetTime - now;
+
+            if (showProgressBarSetting) { 
+                updateProgressBar(diff > 0 ? diff : 0);
+            } else { 
+                timeProgressBarContainer.classList.add('hidden');
+                timeProgressBarContainer.innerHTML = '';
+            }
+
+            if (diff <= 0) {
+                clearInterval(timerInterval);
+                timerDisplay.innerHTML = `<span class="text-red-500 timer-display-text">¡ALARMA!</span>`; 
+                if (!isAlarmSounding) triggerAlarm();
+                dismissAlarmBtn.classList.remove('hidden');
+                timerView.style.opacity = 1; 
+                return;
+            }
+            const h = Math.floor(diff / 3600000); 
+            diff -= h * 3600000;
+            const m = Math.floor(diff / 60000); 
+            diff -= m * 60000;
+            const s = Math.floor(diff / 1000);
+            timerDisplay.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function triggerAlarm() { 
+            isAlarmSounding = true;
+            if (window.electronAPI) {
+                 window.electronAPI.send('notify-alarm', { title: '¡Alarma!', body: 'El tiempo ha terminado.' });
+            } else if (typeof Notification !== 'undefined' && Notification.permission === "granted") {
+                new Notification('¡Alarma!', { body: 'El tiempo ha terminado.' });
+            } else if (typeof Notification !== 'undefined' && Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification('¡Alarma!', { body: 'El tiempo ha terminado.' });
+                    }
+                });
+            }
+
+            if (Tone.context.state !== 'running' || !synth) {
+                initAudio().then(() => { 
+                    if (Tone.context.state === 'running' && synth) startAlarmSoundLoop();
+                    else if (window.electronAPI) showCustomAlert("Error de audio al sonar la alarma.");
+                });
+            } else {
+                startAlarmSoundLoop();
+            }
+        }
+        
+        function startAlarmSoundLoop() { 
+            if (!synth) { 
+                console.warn("Synth no disponible para reproducir alarma.");
+                showCustomAlert("No se pudo reproducir el sonido de la alarma.");
+                return;
+            }
+            if (alarmLoop) { alarmLoop.stop(0); alarmLoop.dispose(); } 
+            alarmLoop = new Tone.Loop(time => {
+                synth.triggerAttackRelease("A4", "8n", time); 
+                synth.triggerAttackRelease("E5", "8n", time + Tone.Time("8n").toSeconds() * 1.5); 
+            }, "0.7s"); 
+            
+            Tone.Transport.bpm.value = 120; 
+            Tone.Transport.start(); 
+            alarmLoop.start(0);
+        }
+
+        function stopAlarmSound() { 
+            if (alarmLoop) {
+                alarmLoop.stop(0);
+            }
+            if (Tone.Transport.state === 'started') { 
+                Tone.Transport.stop(); 
+                Tone.Transport.cancel(0); 
+            }
+            if (synth) synth.triggerRelease(Tone.now()); 
+            isAlarmSounding = false; 
+            dismissAlarmBtn.classList.add('hidden');
+        }
+        
+        dismissAlarmBtn.addEventListener('click', () => { 
+            stopAlarmSound();
+            timerView.style.opacity = timerOpacityValue / 100;
+            timerDisplay.innerHTML = `<span class="text-gray-500 timer-display-text">00:00:00</span>`; 
+        });
+
+        window.addEventListener('beforeunload', () => { 
+            if (window.electronAPI && typeof window.electronAPI.removeAllListeners === 'function') {
+                window.electronAPI.removeAllListeners('load-settings');
+            }
+            if (timerInterval) clearInterval(timerInterval);
+            stopAlarmSound(); 
+        });
+
+    </script>
+</body>
+</html>

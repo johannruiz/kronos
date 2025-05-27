@@ -1,0 +1,66 @@
+{
+  "name": "Kronos",
+  "version": "1.0.0",
+  "description": "Una aplicación de alarma minimalista siempre visible",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\""
+  },
+  "keywords": [
+    "electron",
+    "alarma",
+    "temporizador",
+    "desktop"
+  ],
+  "author": {
+    "name": "Johann Ruiz",
+    "email": "sebiches1@gmail.com"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@electron-forge/cli": "^7.4.0",
+    "@electron-forge/maker-deb": "^7.4.0",
+    "@electron-forge/maker-rpm": "^7.4.0",
+    "@electron-forge/maker-squirrel": "^7.4.0",
+    "@electron-forge/maker-zip": "^7.4.0",
+    "electron": "^29.0.0"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "icon": "assets/icon",
+        "asar": true
+      },
+      "makers": [
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "win32",
+            "darwin",
+            "linux"
+          ],
+          "config": {
+            "name": "Kronos_portable"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "Kronos",
+            "setupIcon": "assets/icon.ico"
+          },
+          "platforms": [
+            "win32"
+          ]
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "electron-store": "^10.0.1"
+  }
+}
