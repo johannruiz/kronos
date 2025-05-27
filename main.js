@@ -7,6 +7,9 @@ let store;
 let mainWindow;
 let timerViewActive = false;
 
+// Establecer el nombre de la aplicación
+app.setName('Kronos');
+
 async function initializeAppModules() {
   try {
     const electronStoreModule = await import('electron-store');
@@ -148,13 +151,13 @@ ipcMain.on('show-setup-window', () => {
     }
 });
 
-ipcMain.on('notify-alarm', (event, data) => {
+ipcMain.on('notify-alarm', (event, { title, body }) => {
     if (Notification.isSupported()) {
-        const notification = new Notification({
-            title: data.title,
-            body: data.body,
-        });
-        notification.show();
+        new Notification({
+            title,
+            body: body,
+            icon: path.join(__dirname, 'icon.png')
+        }).show();
     }
 });
 
