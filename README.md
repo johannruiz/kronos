@@ -23,6 +23,7 @@ Kronos is a minimalist and elegant desktop alarm application built with Electron
 9.  [Contributions](#contributions)
 10. [Author](#author)
 11. [License](#license)
+12. [Release](#release)
 
 ## Main Features
 
