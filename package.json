@@ -1,5 +1,5 @@
 {
-  "name": "Kronos",
+  "name": "kronos",
   "version": "1.0.1",
   "description": "Una aplicación de alarma minimalista siempre visible",
   "main": "main.js",
