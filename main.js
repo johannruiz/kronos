@@ -44,6 +44,7 @@ function createWindow() {
 
     const savedSetupSize = store.get('setupWindowSize');
     const savedAppSettings = store.get('appSettings');
+    const savedSetupPosition = store.get('setupWindowPosition');
 
     mainWindow = new BrowserWindow({
         width: savedSetupSize.width, 
@@ -56,6 +57,14 @@ function createWindow() {
         frame: false,      
         transparent: true, 
         show: false,        
+        backgroundColor: '#00000000', // Fondo completamente transparente (RGBA)
+        x: savedSetupPosition ? savedSetupPosition.x : undefined, 
+        y: savedSetupPosition ? savedSetupPosition.y : undefined,
+        resizable: true, // Permitir redimensionar la ventana de configuración
+        minWidth: 400,   // Ancho mínimo para la ventana de configuración
+        minHeight: 740,  // Alto mínimo ajustado para la ventana de configuración
+        maxWidth: 480,   // Ancho máximo ajustado para la ventana de configuración
+        maxHeight: 780   // Alto máximo ajustado para la ventana de configuración
     });
 
     mainWindow.loadFile('index.html');
@@ -64,13 +73,16 @@ function createWindow() {
 
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
+        if (!savedSetupPosition) { // Si no había posición guardada, centrarla.
+            mainWindow.center();
+        }
         if (savedAppSettings) {
             mainWindow.webContents.send('load-settings', savedAppSettings);
         }
     });
 
     mainWindow.on('resize', () => {
-        if (!mainWindow || mainWindow.isMinimized() || !store) return;
+        if (!mainWindow || mainWindow.isDestroyed() || mainWindow.isMinimized() || !store) return;
         const [width, height] = mainWindow.getSize();
         if (timerViewActive) {
             store.set('timerWindowSize', { width, height });
@@ -80,7 +92,7 @@ function createWindow() {
     });
     
     mainWindow.on('moved', () => {
-        if (!mainWindow || mainWindow.isMinimized() || !store || timerViewActive) return;
+        if (!mainWindow || mainWindow.isDestroyed() || mainWindow.isMinimized() || !store || timerViewActive) return;
         const [x, y] = mainWindow.getPosition();
         store.set('setupWindowPosition', { x, y });
     });
@@ -125,9 +137,13 @@ ipcMain.on('show-timer-window', (event, config = {}) => {
         const widthToSet = config.width || (storedSize ? storedSize.width : defaultTimerWidth);
         const heightToSet = config.height || (storedSize ? storedSize.height : defaultTimerHeight);
         
+        // Ajustar el tamaño mínimo para la vista del temporizador
+        mainWindow.setMinimumSize(100, 50); // Valores pequeños, ajusta según necesites para el temporizador
+        mainWindow.setMaximumSize(0, 0); // 0 significa sin límite máximo para la vista del temporizador
         mainWindow.setAlwaysOnTop(true);
         mainWindow.setResizable(true); 
-        mainWindow.setSize(widthToSet, heightToSet, true); 
+        mainWindow.setSize(widthToSet, heightToSet, true);
+        // mainWindow.setResizable(false); // Permitir que la ventana del temporizador sea redimensionable
         mainWindow.setOpacity(1); 
     }
 });
@@ -139,8 +155,12 @@ ipcMain.on('show-setup-window', () => {
         const defaultSetupWidth = 460;
         const defaultSetupHeight = store.get('setupWindowSize.height', 740); 
 
+        // Restaurar el tamaño mínimo para la vista de configuración
+        mainWindow.setMinimumSize(400, 740); // Alto mínimo ajustado
+        mainWindow.setMaximumSize(480, 780); // Establecer tamaño máximo ajustado
+
         mainWindow.setAlwaysOnTop(false);
-        mainWindow.setResizable(true); 
+        mainWindow.setResizable(true); // La ventana de configuración puede ser redimensionable
         mainWindow.setSize(
             storedSetupSize ? storedSetupSize.width : defaultSetupWidth,
             storedSetupSize ? storedSetupSize.height : defaultSetupHeight,

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" style="background-color: transparent;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -194,7 +194,65 @@
             text-shadow: 0 0 3px rgba(0,0,0,0.8); 
             z-index: 5; 
         }
+        .preset-button {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            background-color: #2d3748; /* Tailwind gray-700 */
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #4a5568; /* Tailwind gray-600 */
+            border-radius: 0.375rem; /* Tailwind rounded-md */
+            text-align: left;
+            font-size: 0.9rem;
+            transition: background-color 0.2s, border-color 0.2s;
+            cursor: pointer;
+        }
+        .preset-button:hover {
+            background-color: #4a5568; /* Tailwind gray-600 */
+            border-color: #718096; /* Tailwind gray-500 */
+        }
+        .preset-delete-btn {
+            background: none;
+            border: none;
+            color: #cbd5e0; /* Tailwind gray-400 */
+            cursor: pointer;
+            padding: 0.25rem;
+            margin-left: 0.5rem;
+            font-size: 0.8rem;
+        }
+        .preset-delete-btn:hover {
+            color: #ef4444; /* Tailwind red-500 */
+        }
+        #addPresetBtn i { /* Ensure icon aligns well */
+            vertical-align: middle;
+        }
 
+        #presetsListContainer {
+            max-height: 180px; /* Altura máxima antes de que aparezca el scroll. Ajusta este valor. */
+            overflow-y: auto;  /* Muestra la barra de scroll vertical solo si es necesario */
+            padding-right: 6px; /* Pequeño padding para que el scroll no tape el contenido */
+            /* Estilos opcionales para personalizar la barra de scroll (WebKit y Firefox) */
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: #4A5568 #2D3748; /* Firefox: color del thumb y del track */
+        }
+
+        /* Para navegadores WebKit (Chrome, Safari, Edge, Opera) */
+        #presetsListContainer::-webkit-scrollbar {
+            width: 8px; /* Ancho de la barra de scroll */
+        }
+
+        #presetsListContainer::-webkit-scrollbar-track {
+            background: #222b38; /* Un poco más oscuro que el fondo del preset para contraste */
+            border-radius: 10px;
+        }
+
+        #presetsListContainer::-webkit-scrollbar-thumb {
+            background-color: #4A5568; /* Color de la parte deslizable (thumb) */
+            border-radius: 10px;
+            border: 2px solid #222b38; /* Crea un efecto de padding alrededor del thumb */
+        }
     </style>
 </head>
 <body class="bg-transparent text-white min-h-screen flex items-center justify-center transition-all duration-300">
@@ -202,8 +260,8 @@
     <div id="setupView" class="draggable p-4 sm:p-6 md:p-8 bg-gray-900 rounded-xl shadow-2xl w-full max-w-md space-y-4 sm:space-y-6">
         <div class="flex justify-between items-center">
             <h1 class="text-xl sm:text-2xl font-semibold text-gray-100">Configurar Alarma</h1>
-            <button id="closeAppBtn" title="Cerrar Aplicación" class="no-drag text-gray-500 hover:text-gray-300 transition-colors">
-                <i class="fas fa-times fa-lg"></i>
+            <button id="closeAppBtn" title="Cerrar Aplicación" aria-label="Cerrar Aplicación" class="no-drag text-gray-500 hover:text-gray-300 transition-colors">
+                <i class="fas fa-times fa-lg" aria-hidden="true"></i>
             </button>
         </div>
         <div class="space-y-3 sm:space-y-5"> 
@@ -244,6 +302,16 @@
                 </div>
             </div>
             <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
+                <label class="block text-sm font-medium text-gray-300 mb-2 no-drag">Presets de Hora</label>
+                <div id="presetsListContainer" class="space-y-2 mb-3 no-drag">
+                    <p id="noPresetsText" class="text-gray-400 text-xs italic no-drag">No hay presets guardados.</p>
+                    <!-- Preset buttons will be dynamically added here -->
+                </div>
+                <button id="addPresetBtn" class="no-drag w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-md transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                    <i class="fas fa-plus mr-1.5" aria-hidden="true"></i> Guardar Hora Actual como Preset
+                </button>
+            </div>
+            <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
                 <label for="soundSwitch" class="flex items-center justify-between mb-3 no-drag cursor-pointer">
                     <span class="text-sm font-medium text-gray-300">
                         Activar Sonido de Alarma
@@ -256,7 +324,7 @@
             </div>
         </div>
         <button id="startTimerBtn" class="no-drag w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors text-base shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
-            <i class="fas fa-play mr-1.5"></i> Iniciar Temporizador
+            <i class="fas fa-play mr-1.5" aria-hidden="true"></i> Iniciar Temporizador
         </button>
     </div>
 
@@ -266,11 +334,11 @@
             <div id="timeProgressBarContainer" class="w-4/5 sm:w-3/4 max-w-xs sm:max-w-sm h-2 sm:h-2.5 flex items-center rounded-full my-2 overflow-hidden transition-all duration-200" style="gap: 2px;">
             </div>
             <button id="dismissAlarmBtn" class="hidden no-drag mt-2 sm:mt-3 text-sm sm:text-base px-4 py-2 rounded-lg transition-all duration-200">
-                <i class="fas fa-bell-slash mr-1.5"></i> Descartar Alarma
+                <i class="fas fa-bell-slash mr-1.5" aria-hidden="true"></i> Descartar Alarma
             </button>
         </div>
-        <button id="stopTimerBtn" title="Volver a Configuración" class="no-drag absolute bottom-2 sm:bottom-4 right-2 sm:right-4 p-2 text-gray-500 hover:text-white transition-all duration-200">
-            <i class="fas fa-cog timer-cog-icon"></i> 
+        <button id="stopTimerBtn" title="Volver a Configuración" aria-label="Volver a Configuración" class="no-drag absolute bottom-2 sm:bottom-4 right-2 sm:right-4 p-2 text-gray-500 hover:text-white transition-all duration-200">
+            <i class="fas fa-cog timer-cog-icon" aria-hidden="true"></i>
         </button>
     </div>
 
@@ -303,6 +371,9 @@
         const progressTypeSegmentsBtn = document.getElementById('progressTypeSegments'); 
         const progressTypePercentageBtn = document.getElementById('progressTypePercentage'); 
         const soundSwitch = document.getElementById('soundSwitch');
+        const presetsListContainer = document.getElementById('presetsListContainer');
+        const addPresetBtn = document.getElementById('addPresetBtn');
+        const noPresetsText = document.getElementById('noPresetsText');
 
         let timerInterval;
         let targetTime;
@@ -314,7 +385,9 @@
         let showProgressBarSetting = true; 
         let progressBarTypeSetting = 'segments'; 
         let soundEnabled = true;
-
+        let presets = [];
+        let pendingSettingsToLoad = null; 
+        
         async function initAudio() { 
             try {
                 if (!soundEnabled) return;
@@ -332,21 +405,106 @@
         }
         
         document.addEventListener('DOMContentLoaded', () => {
-            populateTimeSelects();
+            populateTimeSelects(); // Populate selects first
             initAudio();
             timeProgressBarContainer.classList.add('hidden'); 
             updateProgressBarTypeControlsVisibility(); 
+
+            if (pendingSettingsToLoad) { // Apply settings if they arrived before DOM ready
+                applySettings(pendingSettingsToLoad);
+                pendingSettingsToLoad = null; // Clear after applying
+            } else {
+                renderPresets(); // Render empty presets if no settings loaded yet
+            }
+            sendSetupViewSize(); // Send initial size after DOM is ready
         });
+
+        function applySettings(settings) {
+            if (settings) {
+                alarmHourSelect.value = settings.alarmHour || '07';
+                alarmMinuteSelect.value = settings.alarmMinute || '00';
+                alarmAmPmSelect.value = settings.alarmAmPm || 'AM';
+                
+                transparencySlider.value = settings.opacity || 100;
+                transparencyValueSpan.textContent = settings.opacity || 100;
+                timerOpacityValue = settings.opacity || 100;
+
+                if (settings.hasOwnProperty('showProgressBar')) {
+                    showProgressBarSetting = settings.showProgressBar;
+                    progressBarSwitch.checked = settings.showProgressBar;
+                } else { 
+                    showProgressBarSetting = true; 
+                    progressBarSwitch.checked = true;
+                }
+                updateProgressBarTypeControlsVisibility(); 
+
+                if (settings.hasOwnProperty('progressBarType')) {
+                    progressBarTypeSetting = settings.progressBarType;
+                    if (progressBarTypeSetting === 'percentage') {
+                        progressTypePercentageBtn.classList.add('active');
+                        progressTypeSegmentsBtn.classList.remove('active');
+                    } else { 
+                        progressBarTypeSetting = 'segments'; 
+                        progressTypeSegmentsBtn.classList.add('active');
+                        progressTypePercentageBtn.classList.remove('active');
+                    }
+                } else { 
+                    progressBarTypeSetting = 'segments';
+                    progressTypeSegmentsBtn.classList.add('active');
+                    progressTypePercentageBtn.classList.remove('active');
+                }
+
+                if (settings.hasOwnProperty('soundEnabled')) {
+                    soundEnabled = settings.soundEnabled;
+                    soundSwitch.checked = settings.soundEnabled;
+                } else {
+                    soundEnabled = true;
+                    soundSwitch.checked = true;
+                }
+
+                if (settings.presets && Array.isArray(settings.presets)) {
+                    presets = settings.presets;
+                } else {
+                    presets = []; 
+                }
+                sortPresets(presets); // Sort presets after loading
+                renderPresets();
+            }
+        }
 
         function showCustomAlert(message) { 
             modalMessageText.textContent = message;
             customAlertModal.style.display = 'flex';
         }
         modalOkButton.addEventListener('click', () => { customAlertModal.style.display = 'none'; });
+
+        function sendSetupViewSize() {
+            if (window.electronAPI) {
+                const setupViewElement = document.getElementById('setupView');
+                if (setupViewElement) {
+                    const { offsetWidth, offsetHeight } = setupViewElement;
+                    window.electronAPI.send('setup-view-ready', { width: offsetWidth, height: offsetHeight });
+                }
+            }
+        }
         window.addEventListener('click', (event) => {
             if (event.target == customAlertModal) customAlertModal.style.display = 'none';
         });
 
+        function timeToMinutes(preset) {
+            let hour = parseInt(preset.hour, 10);
+            const minute = parseInt(preset.minute, 10);
+            const ampm = preset.ampm;
+
+            if (ampm === 'AM' && hour === 12) {
+                hour = 0; // 12 AM is midnight (00:xx)
+            } else if (ampm === 'PM' && hour !== 12) {
+                hour += 12; // 1 PM to 11 PM
+            }
+            // 1 AM to 11 AM remain as they are
+            // 12 PM remains as 12
+            return (hour * 60) + minute;
+        }
         function populateTimeSelects() { 
             alarmHourSelect.innerHTML = ''; 
             alarmMinuteSelect.innerHTML = ''; 
@@ -420,59 +578,105 @@
                     opacity: timerOpacityValue, 
                     showProgressBar: showProgressBarSetting, 
                     progressBarType: progressBarTypeSetting,
-                    soundEnabled: soundEnabled
+                    soundEnabled: soundEnabled,
+                    presets: presets
                 };
                 window.electronAPI.send('save-settings', settings);
             }
         }
         
+        function sortPresets(presetsArray) {
+            presetsArray.sort((a, b) => {
+                const timeA = timeToMinutes(a);
+                const timeB = timeToMinutes(b);
+                return timeA - timeB;
+            });
+        }
+        function renderPresets() {
+            presetsListContainer.innerHTML = ''; // Clear existing presets
+
+            if (presets.length === 0) {
+                if (noPresetsText) { // Check if element exists
+                    noPresetsText.style.display = 'block';
+                    presetsListContainer.appendChild(noPresetsText); // Re-append if cleared
+                }
+            } else {
+                if (noPresetsText) noPresetsText.style.display = 'none';
+                presets.forEach((preset, index) => {
+                    const presetButton = document.createElement('button');
+                    presetButton.className = 'preset-button no-drag';
+                    presetButton.type = 'button';
+
+                    const presetTimeText = document.createElement('span');
+                    presetTimeText.textContent = `${preset.hour}:${preset.minute} ${preset.ampm}`;
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'preset-delete-btn no-drag';
+                    deleteBtn.innerHTML = '<i class="fas fa-trash-alt" aria-hidden="true"></i>';
+                    deleteBtn.title = 'Eliminar preset';
+                    deleteBtn.setAttribute('aria-label', `Eliminar preset ${preset.hour}:${preset.minute} ${preset.ampm}`);
+                    deleteBtn.onclick = (event) => {
+                        event.stopPropagation(); 
+                        deletePreset(index);
+                    };
+
+                    presetButton.appendChild(presetTimeText);
+                    presetButton.appendChild(deleteBtn);
+
+                    presetButton.onclick = () => {
+                        applyPreset(index);
+                    };
+                    presetsListContainer.appendChild(presetButton);
+                });
+            }
+        }
+
+        function applyPreset(index) {
+            if (presets[index]) {
+                const preset = presets[index];
+                alarmHourSelect.value = preset.hour;
+                alarmMinuteSelect.value = preset.minute;
+                alarmAmPmSelect.value = preset.ampm;
+                saveCurrentSettings(); // Save settings after applying a preset to reflect the change
+            }
+        }
+
+        addPresetBtn.addEventListener('click', () => {
+            const hour = alarmHourSelect.value;
+            const minute = alarmMinuteSelect.value;
+            const ampm = alarmAmPmSelect.value;
+
+            const existingPreset = presets.find(p => p.hour === hour && p.minute === minute && p.ampm === ampm);
+            if (existingPreset) {
+                showCustomAlert('Este preset ya existe.');
+                return;
+            }
+            if (presets.length >= 10) { 
+                showCustomAlert('Has alcanzado el límite de 10 presets.');
+                return;
+            }
+            presets.push({ hour, minute, ampm });
+            sortPresets(presets); // Sort after adding
+            renderPresets();
+            saveCurrentSettings();
+        });
+
+        function deletePreset(index) {
+            if (presets[index]) {
+                presets.splice(index, 1);
+                sortPresets(presets); // Sort after deleting
+                renderPresets();
+                saveCurrentSettings();
+            }
+        }
+
         if (window.electronAPI && typeof window.electronAPI.receive === 'function') {
             window.electronAPI.receive('load-settings', (settings) => {
                 console.log("Ajustes recibidos en renderer:", settings);
-                if (settings) {
-                    if (alarmHourSelect.options.length > 0) alarmHourSelect.value = settings.alarmHour || '07';
-                    else setTimeout(() => alarmHourSelect.value = settings.alarmHour || '07', 50);
-                    if (alarmMinuteSelect.options.length > 0) alarmMinuteSelect.value = settings.alarmMinute || '00';
-                    else setTimeout(() => alarmMinuteSelect.value = settings.alarmMinute || '00', 50);
-                    if (alarmAmPmSelect.options.length > 0) alarmAmPmSelect.value = settings.alarmAmPm || 'AM';
-                    else setTimeout(() => alarmAmPmSelect.value = settings.alarmAmPm || 'AM', 50);
-                    
-                    transparencySlider.value = settings.opacity || 100;
-                    transparencyValueSpan.textContent = settings.opacity || 100;
-                    timerOpacityValue = settings.opacity || 100;
-
-                    if (settings.hasOwnProperty('showProgressBar')) {
-                        showProgressBarSetting = settings.showProgressBar;
-                        progressBarSwitch.checked = settings.showProgressBar;
-                    } else { 
-                        showProgressBarSetting = true; 
-                        progressBarSwitch.checked = true;
-                    }
-                    updateProgressBarTypeControlsVisibility(); 
-
-                    if (settings.hasOwnProperty('progressBarType')) {
-                        progressBarTypeSetting = settings.progressBarType;
-                        if (progressBarTypeSetting === 'percentage') {
-                            progressTypePercentageBtn.classList.add('active');
-                            progressTypeSegmentsBtn.classList.remove('active');
-                        } else { 
-                            progressBarTypeSetting = 'segments'; 
-                            progressTypeSegmentsBtn.classList.add('active');
-                            progressTypePercentageBtn.classList.remove('active');
-                        }
-                    } else { 
-                        progressBarTypeSetting = 'segments';
-                        progressTypeSegmentsBtn.classList.add('active');
-                        progressTypePercentageBtn.classList.remove('active');
-                    }
-
-                    if (settings.hasOwnProperty('soundEnabled')) {
-                        soundEnabled = settings.soundEnabled;
-                        soundSwitch.checked = settings.soundEnabled;
-                    } else {
-                        soundEnabled = true;
-                        soundSwitch.checked = true;
-                    }
+                if (document.readyState === 'complete' || document.readyState === 'interactive' || document.readyState === 'loaded') {
+                    applySettings(settings);
+                } else {
+                    pendingSettingsToLoad = settings;
                 }
             });
         }
