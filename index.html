@@ -282,6 +282,142 @@
             display: none;
         }
 
+        /* --- APPLE THEME STYLES --- */
+        .theme-apple {
+            font-family: 'Inter', sans-serif !important;
+        }
+        .theme-apple #setupView,
+        .theme-apple #timerView,
+        .theme-apple .modal-content {
+            background-color: #1E1E1E !important; /* Fondo oscuro principal (similar a macOS Dark) */
+            border: 1px solid #383838 !important; /* Borde oscuro sutil */
+            color: #E0E0E0 !important; /* Texto claro principal */
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25) !important;
+            border-radius: 12px !important;
+        }
+        .theme-apple h1 { font-size: 1.25rem !important; color: #FFFFFF !important; font-weight: 600 !important; }
+        .theme-apple label, .theme-apple span, .theme-apple p { font-size: 0.875rem !important; color: #B0B0B0 !important; } /* Texto secundario más claro */
+        .theme-apple #timerDisplay { font-size: clamp(2rem, 12vw, 5rem) !important; color: #FFFFFF !important; text-shadow: none !important; font-weight: 500 !important;}
+
+        .theme-apple button, .theme-apple .modal-button, .theme-apple .preset-button, .theme-apple .progress-type-selector button {
+            background-color: #3C3C3C !important; /* Botones oscuros */ color: #0A84FF !important; /* Azul Apple brillante para texto */
+            border: 1px solid #505050 !important; border-radius: 8px !important;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15) !important; padding: 0.6em 1em !important; font-size: 0.85rem !important; font-weight: 500 !important;
+        }
+        .theme-apple button:hover, .theme-apple .modal-button:hover, .theme-apple .preset-button:hover, .theme-apple .progress-type-selector button:not(.active):hover {
+            background-color: #4A4A4A !important;
+        }
+        .theme-apple #startTimerBtn, .theme-apple .modal-button { background-color: #0A84FF !important; color: #FFFFFF !important; border-color: #0A84FF !important;}
+        .theme-apple #startTimerBtn:hover, .theme-apple .modal-button:hover { background-color: #0077EE !important; border-color: #0077EE !important;}
+        .theme-apple .progress-type-selector button.active { background-color: #505050 !important; color: #FFFFFF !important; border-color: #606060 !important; }
+
+        .theme-apple #closeAppBtn, .theme-apple .theme-control-btn, .theme-apple #stopTimerBtn, .theme-apple .preset-delete-btn {
+            background-color: transparent !important; border: none !important; color: #A0A0A0 !important; /* Iconos gris claro */
+        }
+        .theme-apple #closeAppBtn:hover, .theme-apple .theme-control-btn:hover, .theme-apple #stopTimerBtn:hover, .theme-apple .preset-delete-btn:hover { color: #0A84FF !important; }
+        .theme-apple #dismissAlarmBtn { background-color: #FF453A !important; color: #FFF !important; border-color: #FF453A !important; } /* Rojo Apple Dark */
+
+        .theme-apple .time-select { background-color: #2C2C2E !important; color: #E0E0E0 !important; border: 1px solid #48484A !important; border-radius: 8px !important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23A0A0A0' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E") !important; }
+        .theme-apple .time-select option { background-color: #2C2C2E !important; color: #E0E0E0 !important; }
+        .theme-apple .time-select:focus { border-color: #0A84FF !important; box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.3) !important; }
+
+        .theme-apple input[type="range"]::-webkit-slider-runnable-track { background: #48484A !important; }
+        .theme-apple input[type="range"]::-webkit-slider-thumb { background-color: #E0E0E0 !important; border: 1px solid #505050 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important; }
+        .theme-apple #transparencyValue { color: #B0B0B0 !important; }
+
+        .theme-apple #timeProgressBarContainer { border: none; border-radius: 8px; background-color: #48484A !important; }
+        .theme-apple #timeProgressBarContainer div[class*="bg-gray-700"] { background-color: #48484A !important; border: none; }
+        .theme-apple #timeProgressBarContainer div[class*="bg-indigo-400"], .theme-apple #timeProgressBarContainer div[class*="bg-indigo-500"] { background-color: #0A84FF !important; }
+        .theme-apple #progressBarPercentageText { color: #FFFFFF !important; text-shadow: 0 0 3px rgba(0,0,0,0.7) !important; font-weight: 500 !important;}
+
+        .theme-apple .presets-scroll-inner::-webkit-scrollbar-track { background: #1E1E1E !important; }
+        .theme-apple .presets-scroll-inner::-webkit-scrollbar-thumb { background-color: #505050 !important; border: 2px solid #1E1E1E !important; }
+        .theme-apple .presets-scroll-inner { scrollbar-color: #505050 #1E1E1E !important; }
+
+        .theme-apple .bg-gray-800 { background-color: #2C2C2E !important; border: 1px solid #48484A; border-radius: 10px !important; box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;}
+        .theme-apple .text-gray-300, .theme-apple .text-gray-400, .theme-apple .text-gray-500 { color: #A0A0A0 !important; }
+
+        .theme-apple input[type="checkbox"].peer + div { background-color: #48484A !important; border: 1px solid #505050; }
+        .theme-apple input[type="checkbox"].peer:checked + div { background-color: #30D158 !important; border-color: #30D158 !important; } /* Verde Apple Dark para switch activo */
+        .theme-apple input[type="checkbox"].peer + div::after { background-color: #E0E0E0 !important; border: 1px solid #505050; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .theme-apple input[type="checkbox"].peer:checked + div::after { border-color: transparent; }
+
+        .theme-apple .modal-content { padding: 24px !important; }
+        .theme-apple #modalMessageText { margin-bottom: 24px !important; color: #E0E0E0 !important; }
+        
+        /* --- FUTURISTIC THEME STYLES --- */
+        .theme-futuristic {
+            font-family: 'Inter', sans-serif !important; /* Fuente limpia y moderna */
+        }
+        .theme-futuristic #setupView,
+        .theme-futuristic #timerView,
+        .theme-futuristic .modal-content {
+            background-color: #0A192F !important; /* Azul oscuro profundo */
+            border: 1px solid #152a4a !important; /* Borde más sutil para ventanas */
+            color: #CCD6F6 !important; /* Texto principal azul claro/blanco */
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.15) !important; /* Sombra más difusa */
+            border-radius: 6px !important; /* Redondeo ligeramente menor */
+        }
+        .theme-futuristic h1, .theme-futuristic label, .theme-futuristic span, .theme-futuristic p, .theme-futuristic #timerDisplay {
+            color: #CCD6F6 !important;
+        }
+        .theme-futuristic h1 { font-size: 1.3rem !important; color: #64FFDA !important; }
+        .theme-futuristic label, .theme-futuristic span, .theme-futuristic p { font-size: 0.85rem !important; }
+        .theme-futuristic #timerDisplay { font-size: clamp(2rem, 12vw, 5rem) !important; text-shadow: 0 0 8px rgba(100, 255, 218, 0.5) !important; }
+
+        .theme-futuristic button, .theme-futuristic .modal-button, .theme-futuristic .preset-button, .theme-futuristic .progress-type-selector button {
+            background-color: #112240 !important; /* Azul más oscuro para fondos de botones */
+            color: #64FFDA !important;
+            border: 1px solid #64FFDA !important;
+            border-radius: 4px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+            padding: 0.6em 1em !important; font-size: 0.8rem !important;
+        }
+        .theme-futuristic button:hover, .theme-futuristic .modal-button:hover, .theme-futuristic .preset-button:hover, .theme-futuristic .progress-type-selector button:not(.active):hover {
+            background-color: #233554 !important;
+            border-color: #79FCE0 !important;
+            box-shadow: 0 0 10px rgba(100, 255, 218, 0.4) !important;
+        }
+        .theme-futuristic .progress-type-selector button.active { background-color: #64FFDA !important; color: #0A192F !important; }
+
+        .theme-futuristic #closeAppBtn, .theme-futuristic .theme-control-btn, .theme-futuristic #stopTimerBtn, .theme-futuristic .preset-delete-btn {
+            background-color: transparent !important; border: none !important; color: #8892B0 !important; /* Gris azulado para iconos */
+        }
+        .theme-futuristic #closeAppBtn:hover, .theme-futuristic .theme-control-btn:hover, .theme-futuristic #stopTimerBtn:hover, .theme-futuristic .preset-delete-btn:hover { color: #64FFDA !important; }
+        .theme-futuristic #dismissAlarmBtn { background-color: #E53E3E !important; color: #FFF !important; border-color: #E53E3E !important; }
+
+        .theme-futuristic .time-select { background-color: #0A192F !important; color: #CCD6F6 !important; border: 1px solid #233554 !important; border-radius: 4px !important; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%2364FFDA' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E") !important; }
+        .theme-futuristic .time-select option { background-color: #0A192F !important; color: #CCD6F6 !important; }
+        .theme-futuristic .time-select:focus { border-color: #64FFDA !important; box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.2) !important; }
+
+        .theme-futuristic input[type="range"]::-webkit-slider-runnable-track { background: #233554 !important; }
+        .theme-futuristic input[type="range"]::-webkit-slider-thumb { background-color: #64FFDA !important; border: 2px solid #0A192F !important; box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.3) !important; }
+        .theme-futuristic #transparencyValue { color: #CCD6F6 !important; }
+
+        .theme-futuristic #timeProgressBarContainer { border: 1px solid #64FFDA; border-radius: 4px; background-color: #112240 !important; }
+        .theme-futuristic #timeProgressBarContainer div[class*="bg-gray-700"] { background-color: #112240 !important; border: 1px solid #233554; }
+        .theme-futuristic #timeProgressBarContainer div[class*="bg-indigo-400"], .theme-futuristic #timeProgressBarContainer div[class*="bg-indigo-500"] { background-color: #64FFDA !important; }
+        .theme-futuristic #progressBarPercentageText { color: #CCD6F6 !important; /* text-shadow eliminado para usar inversión de color */ }
+
+        .theme-futuristic .presets-scroll-inner::-webkit-scrollbar-track { background: #0A192F !important; border: 1px solid #233554; }
+        .theme-futuristic .presets-scroll-inner::-webkit-scrollbar-thumb { background-color: #64FFDA !important; border: 1px solid #0A192F !important; }
+        .theme-futuristic .presets-scroll-inner { scrollbar-color: #64FFDA #0A192F !important; }
+
+        .theme-futuristic .bg-gray-800 { background-color: #112240 !important; border: 1px solid #233554; border-radius: 6px !important; }
+        .theme-futuristic .text-gray-300, .theme-futuristic .text-gray-400, .theme-futuristic .text-gray-500 { color: #A8B2D1 !important; }
+
+        .theme-futuristic input[type="checkbox"].peer + div { background-color: #112240 !important; border: 1px solid #64FFDA; }
+        .theme-futuristic input[type="checkbox"].peer:checked + div { background-color: #64FFDA !important; }
+        .theme-futuristic input[type="checkbox"].peer + div::after { background-color: #233554 !important; border: 1px solid #64FFDA; }
+        .theme-futuristic input[type="checkbox"].peer:checked + div::after { background-color: #0A192F !important; border-color: #64FFDA; }
+
+        .theme-futuristic .modal-content { padding: 20px !important; }
+        .theme-futuristic #modalMessageText { margin-bottom: 20px !important; }
+
+        .theme-futuristic #progressBarPercentageText.percentage-text-inverted-futuristic {
+            color: #0A192F !important; /* Azul muy oscuro para contraste sobre barra cian brillante */
+        }
+
         /* --- RETRO THEME STYLES --- */
         .theme-retro {
             font-family: 'Press Start 2P', monospace !important;
@@ -381,7 +517,10 @@
         .theme-retro #timeProgressBarContainer.percentage-style { height: 18px !important; }
         .theme-retro #timeProgressBarContainer div[class*="bg-gray-700"] { background-color: #000000 !important; border: 1px solid #008000; border-radius: 0 !important; }
         .theme-retro #timeProgressBarContainer div[class*="bg-indigo-400"], .theme-retro #timeProgressBarContainer div[class*="bg-indigo-500"] { background-color: #00FF00 !important; border-radius: 0 !important; }
-        .theme-retro #progressBarPercentageText { color: #000000 !important; font-size: 0.55rem !important; text-shadow: none !important; }
+        .theme-retro #progressBarPercentageText { 
+            color: #00FF00 !important; /* text-shadow de contorno eliminado para usar inversión de color */
+            font-size: 0.55rem !important;
+        }
 
         .theme-retro .presets-scroll-inner::-webkit-scrollbar { width: 10px !important; }
         .theme-retro .presets-scroll-inner::-webkit-scrollbar-track { background: #000000 !important; border: 1px solid #00FF00; border-radius: 0 !important; }
@@ -400,21 +539,31 @@
         .theme-retro .modal-content { padding: 15px !important; }
         .theme-retro #modalMessageText { font-size: 0.65rem !important; margin-bottom: 15px !important; }
 
+        .theme-retro #progressBarPercentageText.percentage-text-inverted-retro {
+            color: #000000 !important; /* Negro para contraste sobre barra verde */
+        }
+
         /* Ensure body font is set for theme-default if not retro */
         body.theme-default { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-transparent text-white min-h-screen flex items-center justify-center transition-all duration-300">
+<body class="bg-transparent text-white min-h-screen flex items-center justify-center transition-colors duration-300">
 
     <div id="setupView" class="draggable p-4 sm:p-6 md:p-8 bg-gray-900 rounded-xl shadow-2xl w-full max-w-4xl space-y-4 sm:space-y-6">
         <div class="flex justify-between items-center mb-1">
             <h1 class="text-xl sm:text-2xl font-semibold text-gray-100">Configura la alarma</h1>
-            <div class="flex items-center space-x-2">
-                <button id="themeToggleBtn" title="Cambiar Tema" aria-label="Cambiar Tema" class="no-drag text-gray-500 hover:text-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2">
-                    <i class="fas fa-palette fa-lg" aria-hidden="true"></i>
-                </button>
+            <div class="flex items-center space-x-1 sm:space-x-2">
+                <div id="themeSelector" class="flex items-center space-x-1 sm:space-x-1.5 no-drag p-1 bg-gray-800/50 rounded-md">
+                    <button id="prevThemeBtn" title="Tema Anterior" aria-label="Tema Anterior" class="theme-control-btn text-gray-400 hover:text-white p-1 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                        <i class="fas fa-chevron-left fa-xs sm:fa-sm" aria-hidden="true"></i>
+                    </button>
+                    <span id="currentThemeName" class="text-xs sm:text-sm text-gray-300 font-medium select-none w-20 sm:w-24 text-center truncate" title="Tema Actual">Default</span>
+                    <button id="nextThemeBtn" title="Tema Siguiente" aria-label="Tema Siguiente" class="theme-control-btn text-gray-400 hover:text-white p-1 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                        <i class="fas fa-chevron-right fa-xs sm:fa-sm" aria-hidden="true"></i>
+                    </button>
+                </div>
                 <button id="closeAppBtn" title="Cerrar Aplicación" aria-label="Cerrar Aplicación" class="no-drag text-gray-500 hover:text-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2">
-                    <i class="fas fa-times fa-lg" aria-hidden="true"></i>
+                    <i class="fas fa-times fa-sm sm:fa-lg" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
@@ -541,7 +690,9 @@
         const soundSwitch = document.getElementById('soundSwitch');
         const presetsListContainer = document.getElementById('presetsListContainer');
         const addPresetBtn = document.getElementById('addPresetBtn');
-        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const prevThemeBtn = document.getElementById('prevThemeBtn');
+        const nextThemeBtn = document.getElementById('nextThemeBtn');
+        const currentThemeNameSpan = document.getElementById('currentThemeName');
 
         let timerInterval;
         let targetTime;
@@ -555,7 +706,8 @@
         let soundEnabled = true;
         let presets = [];
         let pendingSettingsToLoad = null; 
-        let currentTheme = 'default';
+        const availableThemes = ['default', 'retro', 'futuristic', 'apple'];
+        let currentThemeIndex = 0; // Index for availableThemes
         
         async function initAudio() { 
             try {
@@ -589,7 +741,8 @@
             alarmHourSelect.addEventListener('wheel', (e) => handleTimeSelectWheel(e, alarmHourSelect));
             alarmMinuteSelect.addEventListener('wheel', (e) => handleTimeSelectWheel(e, alarmMinuteSelect));
             alarmAmPmSelect.addEventListener('wheel', (e) => handleTimeSelectWheel(e, alarmAmPmSelect));
-            themeToggleBtn.addEventListener('click', toggleTheme);
+            prevThemeBtn.addEventListener('click', () => changeTheme(-1));
+            nextThemeBtn.addEventListener('click', () => changeTheme(1));
 
         });
 
@@ -642,22 +795,40 @@
                     presets = []; 
                 }
 
-                currentTheme = settings.theme || 'default';
-                applyTheme(currentTheme);
+                const savedThemeName = settings.theme || 'default';
+                const themeIndex = availableThemes.indexOf(savedThemeName);
+                currentThemeIndex = themeIndex !== -1 ? themeIndex : 0;
+                applyTheme(availableThemes[currentThemeIndex]);
 
                 sortPresets(presets); // Sort presets after loading
                 renderPresets();
             }
         }
 
-        function applyTheme(themeName) {
-            document.body.classList.remove('theme-default', 'theme-retro');
-            document.body.classList.add(`theme-${themeName}`);
-            currentTheme = themeName;
+        function updateThemeDisplay() {
+            const themeName = availableThemes[currentThemeIndex];
+            let displayName;
+            if (themeName === 'default') {
+                displayName = 'Estándar';
+            } else {
+                displayName = themeName.charAt(0).toUpperCase() + themeName.slice(1);
+            }
+            currentThemeNameSpan.textContent = displayName;
+            currentThemeNameSpan.title = `Tema Actual: ${displayName}`;
         }
 
-        function toggleTheme() {
-            applyTheme(currentTheme === 'default' ? 'retro' : 'default');
+        function applyTheme(themeName) {
+            document.body.classList.remove('theme-default', 'theme-retro', 'theme-futuristic', 'theme-apple');
+            document.body.classList.add(`theme-${themeName}`);
+            updateThemeDisplay();
+        }
+
+        function changeTheme(direction) {
+            currentThemeIndex += direction;
+            if (currentThemeIndex < 0) currentThemeIndex = availableThemes.length - 1;
+            if (currentThemeIndex >= availableThemes.length) currentThemeIndex = 0;
+            
+            applyTheme(availableThemes[currentThemeIndex]);
             saveCurrentSettings(); // Save theme preference
         }
 
@@ -796,7 +967,7 @@
                     progressBarType: progressBarTypeSetting,
                     soundEnabled: soundEnabled,
                     presets: presets,
-                    theme: currentTheme
+                    theme: availableThemes[currentThemeIndex]
                 };
                 window.electronAPI.send('save-settings', settings);
             }
@@ -1025,6 +1196,24 @@
                 const percentageText = document.createElement('span');
                 percentageText.id = 'progressBarPercentageText';
                 percentageText.textContent = `${Math.round(percentageRemaining)}%`;
+
+                // Lógica para invertir el color del texto del porcentaje si es necesario
+                const currentThemeName = availableThemes[currentThemeIndex];
+                percentageText.classList.remove('percentage-text-inverted-retro', 'percentage-text-inverted-futuristic'); // Reset
+
+                // Umbral para considerar que el texto está sobre la parte llena de la barra.
+                // Si la barra llena supera este %, el texto centrado se considera que está sobre la parte llena.
+                const overlapThreshold = 45; 
+
+                if (currentThemeName === 'retro') {
+                    if (percentageRemaining > overlapThreshold) {
+                        percentageText.classList.add('percentage-text-inverted-retro');
+                    }
+                } else if (currentThemeName === 'futuristic') {
+                    if (percentageRemaining > overlapThreshold) {
+                        percentageText.classList.add('percentage-text-inverted-futuristic');
+                    }
+                }
 
                 timeProgressBarContainer.appendChild(filler);
                 timeProgressBarContainer.appendChild(percentageText); 
