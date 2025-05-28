@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">    
     <title>Kronos</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
     <style>
@@ -280,16 +281,142 @@
         .presets-scroll-inner::-webkit-scrollbar { /* Aseguramos que sea visible si antes estaba oculta */
             display: none;
         }
+
+        /* --- RETRO THEME STYLES --- */
+        .theme-retro {
+            font-family: 'Press Start 2P', monospace !important;
+            image-rendering: pixelated;
+        }
+
+        .theme-retro #setupView,
+        .theme-retro #timerView,
+        .theme-retro .modal-content {
+            background-color: #000000 !important;
+            border: 3px solid #00FF00 !important;
+            color: #00FF00 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+        }
+
+        .theme-retro h1,
+        .theme-retro label,
+        .theme-retro span,
+        .theme-retro p,
+        .theme-retro #timerDisplay {
+            color: #00FF00 !important;
+            text-shadow: none !important;
+        }
+        .theme-retro h1 { font-size: 1rem !important; }
+        .theme-retro label, .theme-retro span, .theme-retro p { font-size: 0.60rem !important; line-height: 1.3 !important; }
+        .theme-retro #timerDisplay { font-size: clamp(1.5rem, 10vw, 3.5rem) !important; }
+
+        .theme-retro button,
+        .theme-retro .modal-button,
+        .theme-retro .preset-button,
+        .theme-retro .progress-type-selector button {
+            background-color: #1A1A1A !important;
+            color: #00FF00 !important;
+            border: 2px solid #00FF00 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            padding: 0.6em 0.9em !important;
+            font-size: 0.60rem !important;
+            text-transform: uppercase;
+        }
+        .theme-retro button:hover,
+        .theme-retro .modal-button:hover,
+        .theme-retro .preset-button:hover,
+        .theme-retro .progress-type-selector button:not(.active):hover {
+            background-color: #2c2c2c !important;
+            color: #FFFF00 !important;
+            border-color: #FFFF00 !important;
+        }
+        .theme-retro .progress-type-selector button.active {
+            background-color: #00FF00 !important;
+            color: #000000 !important;
+            border-color: #00FF00 !important;
+        }
+
+        .theme-retro #closeAppBtn,
+        .theme-retro #themeToggleBtn,
+        .theme-retro #stopTimerBtn,
+        .theme-retro .preset-delete-btn {
+            background-color: transparent !important;
+            border: none !important;
+            color: #00FF00 !important;
+            padding: 0.3rem !important;
+        }
+        .theme-retro #closeAppBtn:hover,
+        .theme-retro #themeToggleBtn:hover,
+        .theme-retro #stopTimerBtn:hover,
+        .theme-retro .preset-delete-btn:hover {
+            color: #FFFF00 !important;
+        }
+        .theme-retro #dismissAlarmBtn {
+            background-color: #990000 !important; color: #FFFF00 !important; border: 2px solid #FFFF00 !important;
+        }
+        .theme-retro #dismissAlarmBtn:hover {
+            background-color: #BB0000 !important; color: #FFFFFF !important; border-color: #FFFFFF !important;
+        }
+
+        .theme-retro .time-select {
+            background-color: #000000 !important; color: #00FF00 !important; border: 2px solid #00FF00 !important;
+            border-radius: 0 !important; background-image: none !important; padding: 0.5em 0.6em !important;
+            font-size: 0.60rem !important; appearance: menulist !important;
+        }
+        .theme-retro .time-select option {
+            background-color: #000000 !important; color: #00FF00 !important;
+            font-family: 'Press Start 2P', monospace !important; font-size: 0.60rem !important; padding: 0.4em 0.6em !important;
+        }
+        .theme-retro .time-select:focus { border-color: #FFFF00 !important; box-shadow: none !important; }
+
+        .theme-retro input[type="range"] { -webkit-appearance: none !important; appearance: none !important; background: transparent !important; padding: 0 !important; height: 16px !important; }
+        .theme-retro input[type="range"]::-webkit-slider-runnable-track { background: #00FF00 !important; height: 6px !important; border-radius: 0 !important; border: 1px solid #000000; }
+        .theme-retro input[type="range"]::-moz-range-track { background: #00FF00 !important; height: 6px !important; border-radius: 0 !important; border: 1px solid #000000; }
+        .theme-retro input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none !important; appearance: none !important; margin-top: -7px !important; background-color: #000000 !important; height: 18px !important; width: 10px !important; border-radius: 0 !important; border: 2px solid #00FF00 !important; box-shadow: none !important; }
+        .theme-retro input[type="range"]::-moz-range-thumb { background-color: #000000 !important; height: 18px !important; width: 10px !important; border-radius: 0 !important; border: 2px solid #00FF00 !important; box-shadow: none !important; }
+        .theme-retro #transparencyValue { color: #00FF00 !important; font-size: 0.60rem !important; }
+
+        .theme-retro #timeProgressBarContainer { border: 2px solid #00FF00; border-radius: 0; padding: 2px; background-color: #000000 !important; gap: 0px !important; }
+        .theme-retro #timeProgressBarContainer.percentage-style { height: 18px !important; }
+        .theme-retro #timeProgressBarContainer div[class*="bg-gray-700"] { background-color: #000000 !important; border: 1px solid #008000; border-radius: 0 !important; }
+        .theme-retro #timeProgressBarContainer div[class*="bg-indigo-400"], .theme-retro #timeProgressBarContainer div[class*="bg-indigo-500"] { background-color: #00FF00 !important; border-radius: 0 !important; }
+        .theme-retro #progressBarPercentageText { color: #000000 !important; font-size: 0.55rem !important; text-shadow: none !important; }
+
+        .theme-retro .presets-scroll-inner::-webkit-scrollbar { width: 10px !important; }
+        .theme-retro .presets-scroll-inner::-webkit-scrollbar-track { background: #000000 !important; border: 1px solid #00FF00; border-radius: 0 !important; }
+        .theme-retro .presets-scroll-inner::-webkit-scrollbar-thumb { background-color: #00FF00 !important; border-radius: 0 !important; border: 1px solid #000000 !important; }
+        .theme-retro .presets-scroll-inner { scrollbar-color: #00FF00 #000000 !important; }
+
+        .theme-retro .bg-gray-800 { background-color: #0A0A0A !important; border: 1px solid #008000; border-radius: 0 !important; box-shadow: none !important; }
+        .theme-retro .text-gray-300, .theme-retro .text-gray-400, .theme-retro .text-gray-500 { color: #00B300 !important; }
+        .theme-retro .text-gray-500.italic { font-style: normal !important; }
+
+        .theme-retro input[type="checkbox"].peer + div { background-color: #333 !important; border-radius: 0 !important; border: 1px solid #00FF00; width: 2.25rem !important; height: 1.1rem !important; }
+        .theme-retro input[type="checkbox"].peer:checked + div { background-color: #00FF00 !important; }
+        .theme-retro input[type="checkbox"].peer + div::after { background-color: #000 !important; border-radius: 0 !important; border: 1px solid #00FF00; height: 0.85rem !important; width: 0.85rem !important; top: 1px !important; left: 1px !important; }
+        .theme-retro input[type="checkbox"].peer:checked + div::after { transform: translateX(1.1rem) !important; border-color: #000; }
+
+        .theme-retro .modal-content { padding: 15px !important; }
+        .theme-retro #modalMessageText { font-size: 0.65rem !important; margin-bottom: 15px !important; }
+
+        /* Ensure body font is set for theme-default if not retro */
+        body.theme-default { font-family: 'Inter', sans-serif; }
     </style>
 </head>
 <body class="bg-transparent text-white min-h-screen flex items-center justify-center transition-all duration-300">
 
     <div id="setupView" class="draggable p-4 sm:p-6 md:p-8 bg-gray-900 rounded-xl shadow-2xl w-full max-w-4xl space-y-4 sm:space-y-6">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center mb-1">
             <h1 class="text-xl sm:text-2xl font-semibold text-gray-100">Configura la alarma</h1>
-            <button id="closeAppBtn" title="Cerrar Aplicación" aria-label="Cerrar Aplicación" class="no-drag text-gray-500 hover:text-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2">
-                <i class="fas fa-times fa-lg" aria-hidden="true"></i>
-            </button>
+            <div class="flex items-center space-x-2">
+                <button id="themeToggleBtn" title="Cambiar Tema" aria-label="Cambiar Tema" class="no-drag text-gray-500 hover:text-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2">
+                    <i class="fas fa-palette fa-lg" aria-hidden="true"></i>
+                </button>
+                <button id="closeAppBtn" title="Cerrar Aplicación" aria-label="Cerrar Aplicación" class="no-drag text-gray-500 hover:text-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2">
+                    <i class="fas fa-times fa-lg" aria-hidden="true"></i>
+                </button>
+            </div>
         </div>
 
         <!-- Contenedor principal para las columnas de configuración -->
@@ -414,6 +541,7 @@
         const soundSwitch = document.getElementById('soundSwitch');
         const presetsListContainer = document.getElementById('presetsListContainer');
         const addPresetBtn = document.getElementById('addPresetBtn');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
 
         let timerInterval;
         let targetTime;
@@ -427,6 +555,7 @@
         let soundEnabled = true;
         let presets = [];
         let pendingSettingsToLoad = null; 
+        let currentTheme = 'default';
         
         async function initAudio() { 
             try {
@@ -460,6 +589,7 @@
             alarmHourSelect.addEventListener('wheel', (e) => handleTimeSelectWheel(e, alarmHourSelect));
             alarmMinuteSelect.addEventListener('wheel', (e) => handleTimeSelectWheel(e, alarmMinuteSelect));
             alarmAmPmSelect.addEventListener('wheel', (e) => handleTimeSelectWheel(e, alarmAmPmSelect));
+            themeToggleBtn.addEventListener('click', toggleTheme);
 
         });
 
@@ -511,9 +641,24 @@
                 } else {
                     presets = []; 
                 }
+
+                currentTheme = settings.theme || 'default';
+                applyTheme(currentTheme);
+
                 sortPresets(presets); // Sort presets after loading
                 renderPresets();
             }
+        }
+
+        function applyTheme(themeName) {
+            document.body.classList.remove('theme-default', 'theme-retro');
+            document.body.classList.add(`theme-${themeName}`);
+            currentTheme = themeName;
+        }
+
+        function toggleTheme() {
+            applyTheme(currentTheme === 'default' ? 'retro' : 'default');
+            saveCurrentSettings(); // Save theme preference
         }
 
         function showCustomAlert(message) { 
@@ -650,7 +795,8 @@
                     showProgressBar: showProgressBarSetting, 
                     progressBarType: progressBarTypeSetting,
                     soundEnabled: soundEnabled,
-                    presets: presets
+                    presets: presets,
+                    theme: currentTheme
                 };
                 window.electronAPI.send('save-settings', settings);
             }

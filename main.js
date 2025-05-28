@@ -42,7 +42,8 @@ async function initializeAppModules() {
                 alarmAmPm: 'AM',
                 opacity: 100,
                 showProgressBar: true,
-                progressBarType: 'segments' // Nuevo: 'segments' o 'percentage'
+                progressBarType: 'segments', // 'segments' o 'percentage'
+                theme: 'default' // Nuevo: 'default' o 'retro'
             }
         }
     });
