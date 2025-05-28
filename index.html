@@ -2,8 +2,8 @@
 <html lang="es" style="background-color: transparent;">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alarma Minimalista</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <title>Kronos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
@@ -47,6 +47,28 @@
             outline: none; 
             border-color: #4f46e5;
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+        }
+        /* Añadir padding a las opciones para mejorar el espaciado en el desplegable */
+        .time-select option {
+            padding: 0.625rem 0.75rem; /* Aumentado el padding vertical (era 0.375rem) */
+            /* background-color: #1f2937; */ /* Opcional: si deseas intentar estilizar el fondo de las opciones */
+        }
+        /* Estilizar scrollbar para los selectores de tiempo en WebKit */
+        .time-select::-webkit-scrollbar {
+            width: 8px;
+        }
+        .time-select::-webkit-scrollbar-track {
+            background: #111827; /* Fondo del select */
+            border-radius: 10px;
+            margin: 4px 0; /* Margen para que no pegue a los bordes del select */
+        }
+        .time-select::-webkit-scrollbar-thumb {
+            background-color: #4A5568; /* Color del thumb, similar a otros scrolls */
+            border-radius: 10px;
+            border: 2px solid #111827; /* Borde para que coincida con el fondo del select */
+        }
+        .time-select::-webkit-scrollbar-thumb:hover {
+            background-color: #718096; /* Un poco más claro al pasar el mouse */
         }
         input[type="range"] {
             background-color: transparent;
@@ -230,97 +252,116 @@
         }
 
         #presetsListContainer {
-            max-height: 180px; /* Altura máxima antes de que aparezca el scroll. Ajusta este valor. */
-            overflow-y: auto;  /* Muestra la barra de scroll vertical solo si es necesario */
-            padding-right: 6px; /* Pequeño padding para que el scroll no tape el contenido */
-            /* Estilos opcionales para personalizar la barra de scroll (WebKit y Firefox) */
-            scrollbar-width: thin; /* Firefox */
-            scrollbar-color: #4A5568 #2D3748; /* Firefox: color del thumb y del track */
+            /* Este contenedor es relativo y crece. El scroll real sucede en .presets-scroll-inner */
         }
 
-        /* Para navegadores WebKit (Chrome, Safari, Edge, Opera) */
-        #presetsListContainer::-webkit-scrollbar {
+        .presets-scroll-inner {
+            /* overflow-y: auto; es aplicado por Tailwind. Aquí estilizamos la barra. */
+            padding-right: 6px; /* Espacio para la barra de scroll para que no tape el contenido */
+            /* Estilos para Firefox */
+            scrollbar-width: none;
+            scrollbar-width: thin; /* Para Firefox, muestra una barra delgada */
+            scrollbar-color: #4A5568 #222b38; /* Color del thumb y del track para Firefox */
+        }
+
+        /* Estilos para navegadores WebKit (Chrome, Safari, Edge, Opera) */
+        .presets-scroll-inner::-webkit-scrollbar {
             width: 8px; /* Ancho de la barra de scroll */
         }
-
-        #presetsListContainer::-webkit-scrollbar-track {
-            background: #222b38; /* Un poco más oscuro que el fondo del preset para contraste */
+        .presets-scroll-inner::-webkit-scrollbar-track {
+            background: #222b38; /* Color del fondo de la pista del scroll */
             border-radius: 10px;
         }
-
-        #presetsListContainer::-webkit-scrollbar-thumb {
+        .presets-scroll-inner::-webkit-scrollbar-thumb {
             background-color: #4A5568; /* Color de la parte deslizable (thumb) */
             border-radius: 10px;
             border: 2px solid #222b38; /* Crea un efecto de padding alrededor del thumb */
+        }
+        .presets-scroll-inner::-webkit-scrollbar { /* Aseguramos que sea visible si antes estaba oculta */
+            display: none;
         }
     </style>
 </head>
 <body class="bg-transparent text-white min-h-screen flex items-center justify-center transition-all duration-300">
 
-    <div id="setupView" class="draggable p-4 sm:p-6 md:p-8 bg-gray-900 rounded-xl shadow-2xl w-full max-w-md space-y-4 sm:space-y-6">
+    <div id="setupView" class="draggable p-4 sm:p-6 md:p-8 bg-gray-900 rounded-xl shadow-2xl w-full max-w-4xl space-y-4 sm:space-y-6">
         <div class="flex justify-between items-center">
-            <h1 class="text-xl sm:text-2xl font-semibold text-gray-100">Configurar Alarma</h1>
-            <button id="closeAppBtn" title="Cerrar Aplicación" aria-label="Cerrar Aplicación" class="no-drag text-gray-500 hover:text-gray-300 transition-colors">
+            <h1 class="text-xl sm:text-2xl font-semibold text-gray-100">Configura la alarma</h1>
+            <button id="closeAppBtn" title="Cerrar Aplicación" aria-label="Cerrar Aplicación" class="no-drag text-gray-500 hover:text-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-2">
                 <i class="fas fa-times fa-lg" aria-hidden="true"></i>
             </button>
         </div>
-        <div class="space-y-3 sm:space-y-5"> 
-            <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
-                <label for="alarmHour" class="block text-sm font-medium text-gray-300 mb-2 no-drag">Hora de Alarma (12H)</label>
-                <div class="flex space-x-2 items-center">
-                    <select id="alarmHour" class="time-select no-drag text-sm sm:text-base"></select>
-                    <span class="text-gray-400 text-base sm:text-lg font-semibold no-drag">:</span>
-                    <select id="alarmMinute" class="time-select no-drag text-sm sm:text-base"></select>
-                    <select id="alarmAmPm" class="time-select no-drag min-w-[4rem] sm:min-w-[4.5rem] text-sm sm:text-base"></select>
-                </div>
-            </div>
-            <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
-                <label for="transparencySlider" class="block text-sm font-medium text-gray-300 mb-2 no-drag">
-                    Opacidad (Solo Temporizador): <span id="transparencyValue" class="font-semibold">100</span>%
-                </label>
-                <input type="range" id="transparencySlider" min="20" max="100" value="100" class="w-full h-2.5 rounded-lg appearance-none cursor-pointer no-drag">
-            </div>
-            <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
-                <label for="progressBarSwitch" class="flex items-center justify-between mb-3 no-drag cursor-pointer">
-                    <span class="text-sm font-medium text-gray-300">
-                        Mostrar Barra de Progreso
-                    </span>
-                    <div class="relative"> 
-                        <input type="checkbox" id="progressBarSwitch" class="sr-only peer" checked>
-                        <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
-                    </div>
-                </label>
-                <div id="progressBarTypeContainer" class="mt-2 no-drag"> 
-                    <div class="progress-type-selector no-drag" role="group"> 
-                        <button type="button" id="progressTypeSegments" data-type="segments" class="no-drag active">
-                            Segmentos
-                        </button>
-                        <button type="button" id="progressTypePercentage" data-type="percentage" class="no-drag">
-                            Porcentaje
-                        </button>
+
+        <!-- Contenedor principal para las columnas de configuración -->
+        <div class="flex flex-col md:flex-row md:space-x-6 space-y-4 md:space-y-0">
+
+            <!-- Columna Izquierda: Controles Principales -->
+            <div class="md:w-1/2 space-y-4 sm:space-y-5">
+                <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
+                    <label for="alarmHour" class="block text-sm font-medium text-gray-300 mb-2 no-drag">Hora de Alarma (12H)</label>
+                    <div class="flex space-x-2 items-center">
+                        <select id="alarmHour" class="time-select no-drag text-sm sm:text-base"></select>
+                        <span class="text-gray-400 text-base sm:text-lg font-semibold no-drag">:</span>
+                        <select id="alarmMinute" class="time-select no-drag text-sm sm:text-base"></select>
+                        <select id="alarmAmPm" class="time-select no-drag min-w-[4rem] sm:min-w-[4.5rem] text-sm sm:text-base"></select>
                     </div>
                 </div>
-            </div>
-            <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
-                <label class="block text-sm font-medium text-gray-300 mb-2 no-drag">Presets de Hora</label>
-                <div id="presetsListContainer" class="space-y-2 mb-3 no-drag">
-                    <p id="noPresetsText" class="text-gray-400 text-xs italic no-drag">No hay presets guardados.</p>
-                    <!-- Preset buttons will be dynamically added here -->
+                <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
+                    <label for="transparencySlider" class="block text-sm font-medium text-gray-300 mb-2 no-drag">
+                        Opacidad (Solo Temporizador): <span id="transparencyValue" class="font-semibold">100</span>%
+                    </label>
+                    <input type="range" id="transparencySlider" min="20" max="100" value="100" class="w-full h-2.5 rounded-lg appearance-none cursor-pointer no-drag">
                 </div>
-                <button id="addPresetBtn" class="no-drag w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-md transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
-                    <i class="fas fa-plus mr-1.5" aria-hidden="true"></i> Guardar Hora Actual como Preset
-                </button>
-            </div>
-            <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
-                <label for="soundSwitch" class="flex items-center justify-between mb-3 no-drag cursor-pointer">
-                    <span class="text-sm font-medium text-gray-300">
-                        Activar Sonido de Alarma
-                    </span>
-                    <div class="relative"> 
-                        <input type="checkbox" id="soundSwitch" class="sr-only peer" checked>
-                        <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
+                    <label for="progressBarSwitch" class="flex items-center justify-between mb-3 no-drag cursor-pointer">
+                        <span class="text-sm font-medium text-gray-300">
+                            Mostrar Barra de Progreso
+                        </span>
+                        <div class="relative">
+                            <input type="checkbox" id="progressBarSwitch" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                        </div>
+                    </label>
+                    <div id="progressBarTypeContainer" class="mt-2 no-drag">
+                        <div class="progress-type-selector no-drag" role="group">
+                            <button type="button" id="progressTypeSegments" data-type="segments" class="no-drag active">
+                                Segmentos
+                            </button>
+                            <button type="button" id="progressTypePercentage" data-type="percentage" class="no-drag">
+                                Porcentaje
+                            </button>
+                        </div>
                     </div>
-                </label>
+                </div>
+                <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow">
+                    <label for="soundSwitch" class="flex items-center justify-between mb-3 no-drag cursor-pointer">
+                        <span class="text-sm font-medium text-gray-300">
+                            Activar Sonido de Alarma
+                        </span>
+                        <div class="relative">
+                            <input type="checkbox" id="soundSwitch" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+
+            <!-- Columna Derecha: Presets -->
+            <div class="md:flex-1 space-y-4 sm:space-y-5"> <!-- Columna derecha, su altura se iguala a la izquierda por flexbox -->
+                <div class="p-3 sm:p-5 bg-gray-800 rounded-lg shadow flex flex-col h-full"> <!-- Widget de presets, ocupa toda la altura de la columna -->
+                    <label class="block text-sm font-medium text-gray-300 mb-2 no-drag">Presets de Hora</label>
+                    <!-- Contenedor que crece y establece el límite para el scroll -->
+                    <div id="presetsListContainer" class="relative flex-grow min-h-0"> 
+                        <!-- Contenedor interno que realmente hace scroll -->
+                        <div class="absolute inset-0 overflow-y-auto space-y-2 no-drag presets-scroll-inner">
+                            <!-- Preset buttons will be dynamically added here -->
+                        </div>
+                    </div>
+                    <button id="addPresetBtn" class="no-drag w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-md transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 mt-3"> <!-- Margen superior para separarlo de la lista -->
+                        <i class="fas fa-plus mr-1.5" aria-hidden="true"></i> Guardar Hora Actual como Preset
+                    </button>
+                </div>
             </div>
         </div>
         <button id="startTimerBtn" class="no-drag w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors text-base shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
@@ -345,7 +386,7 @@
     <div id="customAlertModal" class="modal">
         <div class="modal-content">
             <p id="modalMessageText" class="text-base mb-3"></p>
-            <button id="modalOkButton" class="modal-button">Entendido</button>
+            <button id="modalOkButton" class="modal-button no-drag">Entendido</button>
         </div>
     </div>
 
@@ -373,7 +414,6 @@
         const soundSwitch = document.getElementById('soundSwitch');
         const presetsListContainer = document.getElementById('presetsListContainer');
         const addPresetBtn = document.getElementById('addPresetBtn');
-        const noPresetsText = document.getElementById('noPresetsText');
 
         let timerInterval;
         let targetTime;
@@ -415,8 +455,12 @@
                 pendingSettingsToLoad = null; // Clear after applying
             } else {
                 renderPresets(); // Render empty presets if no settings loaded yet
-            }
-            sendSetupViewSize(); // Send initial size after DOM is ready
+            }            
+            // Añadir listeners para la rueda del mouse en los selectores de tiempo
+            alarmHourSelect.addEventListener('wheel', (e) => handleTimeSelectWheel(e, alarmHourSelect));
+            alarmMinuteSelect.addEventListener('wheel', (e) => handleTimeSelectWheel(e, alarmMinuteSelect));
+            alarmAmPmSelect.addEventListener('wheel', (e) => handleTimeSelectWheel(e, alarmAmPmSelect));
+
         });
 
         function applySettings(settings) {
@@ -473,10 +517,18 @@
         }
 
         function showCustomAlert(message) { 
-            modalMessageText.textContent = message;
+            // Usar innerHTML para incluir el icono fácilmente y asegurar alineación
+            // El text-align: center del modal-content se encargará del centrado general. // Comentario anterior
+            modalMessageText.textContent = message; // Mostrar solo el texto del mensaje
             customAlertModal.style.display = 'flex';
         }
-        modalOkButton.addEventListener('click', () => { customAlertModal.style.display = 'none'; });
+        modalOkButton.addEventListener('mousedown', (event) => {
+            event.stopPropagation(); // Prevenir que el mousedown en el botón inicie un drag de la ventana
+        });
+        modalOkButton.addEventListener('click', () => { 
+            console.log('Botón "Entendido" del modal clickeado.'); // Para depuración
+            customAlertModal.style.display = 'none'; 
+        });
 
         function sendSetupViewSize() {
             if (window.electronAPI) {
@@ -565,6 +617,25 @@
             saveCurrentSettings();
         });
 
+        function handleTimeSelectWheel(event, selectElement) {
+            event.preventDefault(); // Prevenir el scroll normal de la página
+
+            const direction = Math.sign(event.deltaY); // -1 para arriba, 1 para abajo
+            let currentIndex = selectElement.selectedIndex;
+            let newIndex = currentIndex + direction;
+
+            // Asegurar que el nuevo índice esté dentro de los límites
+            if (newIndex < 0) {
+                newIndex = 0;
+            } else if (newIndex >= selectElement.options.length) {
+                newIndex = selectElement.options.length - 1;
+            }
+
+            if (newIndex !== currentIndex) {
+                selectElement.selectedIndex = newIndex;
+                selectElement.dispatchEvent(new Event('change')); // Disparar el evento change para guardar ajustes
+            }
+        }
         alarmHourSelect.addEventListener('change', saveCurrentSettings);
         alarmMinuteSelect.addEventListener('change', saveCurrentSettings);
         alarmAmPmSelect.addEventListener('change', saveCurrentSettings);
@@ -595,21 +666,27 @@
         function renderPresets() {
             presetsListContainer.innerHTML = ''; // Clear existing presets
 
-            if (presets.length === 0) {
-                if (noPresetsText) { // Check if element exists
-                    noPresetsText.style.display = 'block';
-                    presetsListContainer.appendChild(noPresetsText); // Re-append if cleared
-                }
+            const scrollInnerContainer = document.createElement('div');
+            scrollInnerContainer.className = 'absolute inset-0 overflow-y-auto no-drag presets-scroll-inner'; // space-y-2 se aplicará si hay múltiples elementos
+            
+            if (presets.length === 0) { 
+                const messageP = document.createElement('p');
+                messageP.className = 'flex items-center justify-center h-full text-sm text-gray-500 no-drag'; // Centrado vertical y horizontal, ocupa altura
+                
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-list-alt fa-fw mr-2'; 
+                
+                messageP.appendChild(icon);
+                messageP.appendChild(document.createTextNode('Aún no has guardado presets.'));
+                scrollInnerContainer.appendChild(messageP);
             } else {
-                if (noPresetsText) noPresetsText.style.display = 'none';
+                scrollInnerContainer.classList.add('space-y-2'); // Añadir espaciado solo si hay presets
                 presets.forEach((preset, index) => {
                     const presetButton = document.createElement('button');
                     presetButton.className = 'preset-button no-drag';
                     presetButton.type = 'button';
-
                     const presetTimeText = document.createElement('span');
                     presetTimeText.textContent = `${preset.hour}:${preset.minute} ${preset.ampm}`;
-                    
                     const deleteBtn = document.createElement('button');
                     deleteBtn.className = 'preset-delete-btn no-drag';
                     deleteBtn.innerHTML = '<i class="fas fa-trash-alt" aria-hidden="true"></i>';
@@ -622,13 +699,13 @@
 
                     presetButton.appendChild(presetTimeText);
                     presetButton.appendChild(deleteBtn);
-
                     presetButton.onclick = () => {
                         applyPreset(index);
                     };
-                    presetsListContainer.appendChild(presetButton);
+                    scrollInnerContainer.appendChild(presetButton);
                 });
             }
+            presetsListContainer.appendChild(scrollInnerContainer);
         }
 
         function applyPreset(index) {

@@ -2,6 +2,24 @@
 const { app, BrowserWindow, ipcMain, Notification, screen } = require('electron');
 const path = require('path');
 
+// Constantes para dimensiones de las ventanas y comportamiento
+const DEFAULT_SETUP_WINDOW_WIDTH = 900; // Aumentado de 700 para más espacio horizontal para presets
+const DEFAULT_SETUP_WINDOW_HEIGHT = 820;
+// Para una ventana de configuración de tamaño fijo:
+const MIN_SETUP_WINDOW_WIDTH = DEFAULT_SETUP_WINDOW_WIDTH;
+const MAX_SETUP_WINDOW_WIDTH = DEFAULT_SETUP_WINDOW_WIDTH;
+const MIN_SETUP_WINDOW_HEIGHT = DEFAULT_SETUP_WINDOW_HEIGHT;
+const MAX_SETUP_WINDOW_HEIGHT = DEFAULT_SETUP_WINDOW_HEIGHT;
+const SETUP_WINDOW_RESIZABLE = false; // La ventana de configuración tendrá un tamaño fijo
+
+const DEFAULT_TIMER_WINDOW_WIDTH = 320;
+const DEFAULT_TIMER_WINDOW_HEIGHT = 150;
+const MIN_TIMER_WINDOW_WIDTH = 100;
+const MIN_TIMER_WINDOW_HEIGHT = 50;
+const TIMER_WINDOW_MAX_WIDTH = 0; // 0 significa sin límite máximo
+const TIMER_WINDOW_MAX_HEIGHT = 0; // 0 significa sin límite máximo
+const TIMER_WINDOW_RESIZABLE = true; // La ventana del temporizador es redimensionable
+
 let Store; 
 let store; 
 let mainWindow;
@@ -16,8 +34,8 @@ async function initializeAppModules() {
     Store = electronStoreModule.default; 
     store = new Store({
         defaults: {
-            setupWindowSize: { width: 460, height: 820 }, // Altura aumentada nuevamente para más espacio para presets
-            timerWindowSize: { width: 320, height: 150 },
+            setupWindowSize: { width: DEFAULT_SETUP_WINDOW_WIDTH, height: DEFAULT_SETUP_WINDOW_HEIGHT },
+            timerWindowSize: { width: DEFAULT_TIMER_WINDOW_WIDTH, height: DEFAULT_TIMER_WINDOW_HEIGHT },
             appSettings: {
                 alarmHour: '07',
                 alarmMinute: '00',
@@ -60,13 +78,13 @@ function createWindow() {
         backgroundColor: '#00000000', // Fondo completamente transparente (RGBA)
         x: savedSetupPosition ? savedSetupPosition.x : undefined, 
         y: savedSetupPosition ? savedSetupPosition.y : undefined,
-        resizable: true, // Permitir redimensionar la ventana de configuración
-        minWidth: 400,    // Ancho mínimo para la ventana de configuración
-        minHeight: 820,   // Alto mínimo aumentado para la ventana de configuración
-        maxWidth: 480,    // Ancho máximo ajustado para la ventana de configuración
-        maxHeight: 820    // Alto máximo aumentado para la ventana de configuración
+        resizable: SETUP_WINDOW_RESIZABLE,
+        minWidth: MIN_SETUP_WINDOW_WIDTH,
+        minHeight: MIN_SETUP_WINDOW_HEIGHT,
+        maxWidth: MAX_SETUP_WINDOW_WIDTH,
+        maxHeight: MAX_SETUP_WINDOW_HEIGHT
     });
-
+    
     mainWindow.loadFile('index.html');
     mainWindow.removeMenu();
     // mainWindow.webContents.openDevTools(); 
@@ -130,20 +148,17 @@ ipcMain.on('quit-app', () => {
 ipcMain.on('show-timer-window', (event, config = {}) => {
     if (mainWindow && store) { 
         timerViewActive = true;
-        const storedSize = store.get('timerWindowSize');
-        const defaultTimerWidth = 320;
-        const defaultTimerHeight = 150; // La altura puede necesitar ajuste si el % es muy grande
+        const storedTimerSize = store.get('timerWindowSize');
 
-        const widthToSet = config.width || (storedSize ? storedSize.width : defaultTimerWidth);
-        const heightToSet = config.height || (storedSize ? storedSize.height : defaultTimerHeight);
+        const widthToSet = config.width || (storedTimerSize ? storedTimerSize.width : DEFAULT_TIMER_WINDOW_WIDTH);
+        const heightToSet = config.height || (storedTimerSize ? storedTimerSize.height : DEFAULT_TIMER_WINDOW_HEIGHT);
         
-        // Ajustar el tamaño mínimo para la vista del temporizador
-        mainWindow.setMinimumSize(100, 50); // Valores pequeños, ajusta según necesites para el temporizador
-        mainWindow.setMaximumSize(0, 0); // 0 significa sin límite máximo para la vista del temporizador
+        mainWindow.setResizable(TIMER_WINDOW_RESIZABLE);
+        mainWindow.setMinimumSize(MIN_TIMER_WINDOW_WIDTH, MIN_TIMER_WINDOW_HEIGHT);
+        mainWindow.setMaximumSize(TIMER_WINDOW_MAX_WIDTH, TIMER_WINDOW_MAX_HEIGHT); // 0,0 significa sin límite
+
         mainWindow.setAlwaysOnTop(true);
-        mainWindow.setResizable(true); 
         mainWindow.setSize(widthToSet, heightToSet, true);
-        // mainWindow.setResizable(false); // Permitir que la ventana del temporizador sea redimensionable
         mainWindow.setOpacity(1); 
     }
 });
@@ -152,20 +167,20 @@ ipcMain.on('show-setup-window', () => {
     if (mainWindow && store) { 
         timerViewActive = false;
         const storedSetupSize = store.get('setupWindowSize');
-        const defaultSetupWidth = 460;
-        const defaultSetupHeight = store.get('setupWindowSize.height', 820); // Usar la nueva altura por defecto aumentada
+        
+        const effectiveSetupWidth = storedSetupSize ? storedSetupSize.width : DEFAULT_SETUP_WINDOW_WIDTH;
+        const effectiveSetupHeight = storedSetupSize ? storedSetupSize.height : DEFAULT_SETUP_WINDOW_HEIGHT;
 
-        // Restaurar el tamaño mínimo para la vista de configuración
-        mainWindow.setMinimumSize(400, 820); // Alto mínimo aumentado
-        mainWindow.setMaximumSize(480, 820); // Establecer tamaño máximo aumentado
+        mainWindow.setResizable(SETUP_WINDOW_RESIZABLE);
+        mainWindow.setMinimumSize(MIN_SETUP_WINDOW_WIDTH, MIN_SETUP_WINDOW_HEIGHT);
+        mainWindow.setMaximumSize(MAX_SETUP_WINDOW_WIDTH, MAX_SETUP_WINDOW_HEIGHT);
 
         mainWindow.setAlwaysOnTop(false);
-        mainWindow.setResizable(true); // La ventana de configuración puede ser redimensionable
         mainWindow.setSize(
-            storedSetupSize ? storedSetupSize.width : defaultSetupWidth,
-            storedSetupSize ? storedSetupSize.height : defaultSetupHeight,
+            effectiveSetupWidth,
+            effectiveSetupHeight,
             true
-        ); 
+        );
         mainWindow.setOpacity(1);
         mainWindow.center(); 
     }
