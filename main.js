@@ -16,7 +16,7 @@ async function initializeAppModules() {
     Store = electronStoreModule.default; 
     store = new Store({
         defaults: {
-            setupWindowSize: { width: 460, height: 740 }, // Altura aumentada para nuevos controles
+            setupWindowSize: { width: 460, height: 820 }, // Altura aumentada nuevamente para más espacio para presets
             timerWindowSize: { width: 320, height: 150 },
             appSettings: {
                 alarmHour: '07',
@@ -61,10 +61,10 @@ function createWindow() {
         x: savedSetupPosition ? savedSetupPosition.x : undefined, 
         y: savedSetupPosition ? savedSetupPosition.y : undefined,
         resizable: true, // Permitir redimensionar la ventana de configuración
-        minWidth: 400,   // Ancho mínimo para la ventana de configuración
-        minHeight: 740,  // Alto mínimo ajustado para la ventana de configuración
-        maxWidth: 480,   // Ancho máximo ajustado para la ventana de configuración
-        maxHeight: 780   // Alto máximo ajustado para la ventana de configuración
+        minWidth: 400,    // Ancho mínimo para la ventana de configuración
+        minHeight: 820,   // Alto mínimo aumentado para la ventana de configuración
+        maxWidth: 480,    // Ancho máximo ajustado para la ventana de configuración
+        maxHeight: 820    // Alto máximo aumentado para la ventana de configuración
     });
 
     mainWindow.loadFile('index.html');
@@ -153,11 +153,11 @@ ipcMain.on('show-setup-window', () => {
         timerViewActive = false;
         const storedSetupSize = store.get('setupWindowSize');
         const defaultSetupWidth = 460;
-        const defaultSetupHeight = store.get('setupWindowSize.height', 740); 
+        const defaultSetupHeight = store.get('setupWindowSize.height', 820); // Usar la nueva altura por defecto aumentada
 
         // Restaurar el tamaño mínimo para la vista de configuración
-        mainWindow.setMinimumSize(400, 740); // Alto mínimo ajustado
-        mainWindow.setMaximumSize(480, 780); // Establecer tamaño máximo ajustado
+        mainWindow.setMinimumSize(400, 820); // Alto mínimo aumentado
+        mainWindow.setMaximumSize(480, 820); // Establecer tamaño máximo aumentado
 
         mainWindow.setAlwaysOnTop(false);
         mainWindow.setResizable(true); // La ventana de configuración puede ser redimensionable
