@@ -158,7 +158,13 @@ ipcMain.on('show-timer-window', (event, config = {}) => {
         mainWindow.setMinimumSize(MIN_TIMER_WINDOW_WIDTH, MIN_TIMER_WINDOW_HEIGHT);
         mainWindow.setMaximumSize(TIMER_WINDOW_MAX_WIDTH, TIMER_WINDOW_MAX_HEIGHT); // 0,0 significa sin límite
 
-        mainWindow.setAlwaysOnTop(true);
+        // --- Inicio del código propuesto integrado ---
+        // Hacer visible en todos los espacios de trabajo y sobre apps en pantalla completa (si es soportado)
+        mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+        // Establecer un nivel alto de "siempre encima"
+        mainWindow.setAlwaysOnTop(true, 'screen-saver');
+        // --- Fin del código propuesto integrado ---
+        
         mainWindow.setSize(widthToSet, heightToSet, true);
         mainWindow.setOpacity(1); 
     }
@@ -176,7 +182,10 @@ ipcMain.on('show-setup-window', () => {
         mainWindow.setMinimumSize(MIN_SETUP_WINDOW_WIDTH, MIN_SETUP_WINDOW_HEIGHT);
         mainWindow.setMaximumSize(MAX_SETUP_WINDOW_WIDTH, MAX_SETUP_WINDOW_HEIGHT);
 
-        mainWindow.setAlwaysOnTop(false);
+        // Revertir los ajustes de visibilidad cuando se vuelve a la ventana de configuración
+        mainWindow.setVisibleOnAllWorkspaces(false); // Ya no necesita estar en todos los workspaces
+        mainWindow.setAlwaysOnTop(false); // Ya no necesita estar siempre encima
+
         mainWindow.setSize(
             effectiveSetupWidth,
             effectiveSetupHeight,
