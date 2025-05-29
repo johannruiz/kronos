@@ -1,6 +1,6 @@
 {
   "name": "Kronos",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Una aplicación de alarma minimalista siempre visible",
   "main": "main.js",
   "scripts": {
